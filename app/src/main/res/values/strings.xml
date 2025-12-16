@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">PureLink</string>
-    <string name="service_desc">Monitors clipboard and removes tracking parameters.</string>
-    
-    <string name="accessibility_title">Why do we need this?</string>
-    <string name="accessibility_desc">PureLink needs Accessibility Service to detect when you copy a link in ANY app, so it can clean it instantly in the background. We do NOT collect or save your data.</string>
-    <string name="permission_required">Permission Required</string>
-    <string name="ok">Understood</string>
-    <string name="cancel">Cancel</string>
-</resources>
+    <string name="service_desc">PureLink Monitor for clipboard cleaning.</string>
+    <string name="accessibility_title">Activate Monitor</string>
+    <string name="accessibility_desc">To clean links automatically in background (e.g. inside WhatsApp), PureLink needs Accessibility Service enabled.</string>
+    <string name="ok">Enable Now</string>
+    <string name="cancel">Later</string>
+    <string name="clean_link_action">PureLink Clean</string> </resources>
