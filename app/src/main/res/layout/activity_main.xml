@@ -3,97 +3,171 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    android:padding="16dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PureLink Terminal"
-            android:fontFamily="monospace"
+            android:text=">_ PURELINK_V2"
             android:textColor="#00FF00"
-            android:textSize="24sp"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:typeface="monospace"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
+            android:orientation="vertical"
+            android:background="@drawable/bg_terminal_border"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LINK TEST AREA"
+                android:textColor="#00AA00"
+                android:typeface="monospace"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"/>
 
             <EditText
                 android:id="@+id/inputField"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Paste Link Here..."
+                android:hint="Paste dirty link here..."
                 android:textColor="#FFFFFF"
-                android:textColorHint="#888888"
-                android:fontFamily="monospace"
-                android:backgroundTint="#00FF00"
-                android:inputType="textMultiLine"/>
+                android:textColorHint="#555555"
+                android:background="@null"
+                android:typeface="monospace"
+                android:minHeight="48dp"/>
+            
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#333333" android:layout_marginBottom="12dp"/>
 
-            <Button
-                android:id="@+id/btnPaste"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="PASTE"
-                android:fontFamily="monospace"
-                android:textColor="#000000"
-                android:backgroundTint="#00FF00"
-                android:contentDescription="Paste from Clipboard"
-                android:layout_marginStart="4dp"/>
+                android:orientation="horizontal">
+                
+                <Button
+                    android:id="@+id/btnPaste"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="PASTE"
+                    android:backgroundTint="#333333"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/btnClean"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="CLEAN"
+                    android:backgroundTint="#008800"
+                    android:textColor="#FFFFFF"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SYSTEM CONFIGURATION"
+            android:textColor="#888888"
+            android:typeface="monospace"
+            android:layout_marginBottom="16dp"/>
+
+        <LinearLayout
+            android:id="@+id/cardService"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_terminal_border"
+            android:padding="16dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Background Monitor"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Auto-clean links in other apps"
+                    android:textColor="#AAAAAA"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switchService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
-            
-            <Button
-                android:id="@+id/btnClean"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="CLEAN"
-                android:fontFamily="monospace"
-                android:backgroundTint="#444444"
-                android:layout_marginEnd="4dp"/>
-
-            <Button
-                android:id="@+id/btnCopy"
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="COPY"
-                android:fontFamily="monospace"
-                android:backgroundTint="#444444"
-                android:contentDescription="Copy to Clipboard"
-                android:layout_marginStart="4dp"/>
+                android:text="Haptic Feedback (Vibration)"
+                android:textColor="#FFFFFF"/>
+            <Switch
+                android:id="@+id/switchVibrate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#222222"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Show Notifications (Toasts)"
+                android:textColor="#FFFFFF"/>
+            <Switch
+                android:id="@+id/switchToast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#222222"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SYSTEM CONFIG"
-            android:fontFamily="monospace"
-            android:textColor="#888888"
-            android:layout_marginBottom="16dp"/>
+            android:text="Developed by Ahmed Samy"
+            android:gravity="center"
+            android:textColor="#444444"
+            android:typeface="monospace"
+            android:layout_marginTop="40dp"/>
 
-        <Switch
-            android:id="@+id/switchService"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Background Monitor"
-            android:fontFamily="monospace"
-            android:textColor="#FFFFFF"
-            android:buttonTint="#00FF00"
-            android:layout_marginBottom="12dp"/>
     </LinearLayout>
 </ScrollView>
