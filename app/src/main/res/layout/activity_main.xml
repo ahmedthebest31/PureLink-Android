@@ -12,9 +12,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#000000"
-        app:title=">_ PURELINK"
-        app:titleTextColor="#00FF00"
-        app:popupTheme="@style/Theme.AppCompat.Light" />
+        app:popupTheme="@style/Theme.AppCompat.Light">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=">_ PureLink"
+                android:textColor="#00FF00"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:typeface="monospace"/>
+
+            <TextView
+                android:id="@+id/txtToolbarStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="Cleaned: 0 items"/>
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -34,64 +62,12 @@
                 android:background="@drawable/bg_terminal_border"
                 android:padding="16dp"
                 android:layout_marginBottom="24dp">
-                
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="SESSION_STATS"
-                    android:textColor="#008800"
-                    android:typeface="monospace"
-                    android:textSize="12sp"/>
-                
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="8dp">
-                    
-                    <TextView
-                        android:id="@+id/txtStats"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="#00FF00"
-                        android:textSize="32sp"
-                        android:textStyle="bold"
-                        android:typeface="monospace"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="LINKS PROCESSED"
-                        android:textColor="#FFFFFF"
-                        android:typeface="monospace"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_terminal_border"
-                android:padding="16dp"
-                android:layout_marginBottom="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="MANUAL_TERMINAL"
-                    android:textColor="#008800"
-                    android:typeface="monospace"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="8dp"/>
 
                 <EditText
                     android:id="@+id/inputField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Paste URL here..."
+                    android:hint="Paste Input here..."
                     android:textColor="#FFFFFF"
                     android:textColorHint="#555555"
                     android:background="@null"
@@ -130,7 +106,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SYSTEM_DAEMON_CONFIG"
+                android:text="SYSTEM_DAEMON"
                 android:textColor="#666666"
                 android:typeface="monospace"
                 android:layout_marginBottom="8dp"/>
@@ -152,14 +128,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Background Monitor"
+                        android:text="Monitor Service"
                         android:textColor="#FFFFFF"
                         android:textStyle="bold"
                         android:textSize="16sp"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Auto-detect links"
+                        android:text="Background &amp; Quick Tile"
                         android:textColor="#AAAAAA"
                         android:textSize="12sp"/>
                 </LinearLayout>
@@ -179,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:padding="12dp"
                     android:gravity="center_vertical">
-                    <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Unshorten Links (Resolve URL)" android:textColor="#DDDDDD" android:typeface="monospace"/>
+                    <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Unshorten URLs" android:textColor="#DDDDDD" android:typeface="monospace"/>
                     <Switch android:id="@+id/switchUnshorten" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
@@ -206,15 +182,6 @@
                 </LinearLayout>
             </LinearLayout>
             
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="v2.1 | Ahmed Samy"
-                android:gravity="center"
-                android:textColor="#333333"
-                android:typeface="monospace"
-                android:layout_marginTop="20dp"/>
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

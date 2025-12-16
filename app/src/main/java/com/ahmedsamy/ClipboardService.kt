@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.ClipboardManager.OnPrimaryClipChangedListener
 import android.content.Context
 import android.os.Build
-import android.os.SystemClock
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.accessibility.AccessibilityEvent
@@ -16,63 +15,57 @@ class ClipboardService : AccessibilityService() {
 
     private lateinit var clipboard: ClipboardManager
     private lateinit var vibrator: Vibrator
-    private var lastCheckTime: Long = 0
-    private val CHECK_COOLDOWN = 1000L // فحص واحد كل ثانية كحد أقصى
-
-    // الطريقة 1: مستمع الحافظة (لبعض الأجهزة)
+    
     private val clipListener = OnPrimaryClipChangedListener {
-        performCheck("Listener")
+        checkAndClean()
     }
 
     override fun onServiceConnected() {
+        super.onServiceConnected()
         clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        clipboard.addPrimaryClipChangedListener(clipListener)
         
-        try {
-            clipboard.addPrimaryClipChangedListener(clipListener)
-        } catch (e: Exception) {
-            // بعض الأجهزة بترفض التسجيل، مش مشكلة هنعتمد على الطريقة 2
-        }
-        
-        Toast.makeText(this, "Monitor Force Started 🟢", Toast.LENGTH_SHORT).show()
-    }
-
-    // الطريقة 2: فحص إجباري مع أحداث الشاشة (زي قارئ الشاشة)
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // ده اللي هيخلي الخدمة شغالة غصب عن النظام
-        // بنعمل فحص كل ثانية لو فيه نشاط على الشاشة
-        val currentTime = SystemClock.elapsedRealtime()
-        if (currentTime - lastCheckTime > CHECK_COOLDOWN) {
-            performCheck("Event")
-            lastCheckTime = currentTime
+        // التأكد إن الحالة الافتراضية "شغال" عند أول تشغيل
+        val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
+        if (!prefs.contains("monitoring_active")) {
+            prefs.edit().putBoolean("monitoring_active", true).apply()
         }
     }
 
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
     override fun onInterrupt() {}
 
-    private fun performCheck(source: String) {
-        if (!::clipboard.isInitialized) return
-        if (!clipboard.hasPrimaryClip()) return
-
-        try {
-            val item = clipboard.primaryClip?.getItemAt(0)
-            val text = item?.text?.toString() ?: return
-
-            if (isDirty(text)) {
-                // تأكد إننا مش بننظف نفس الرابط تاني
-                if (text.contains("PureLink")) return
-
-                val cleaned = cleanUrl(text)
-                if (cleaned != text) {
-                    // النسخ
-                    val newClip = ClipData.newPlainText("Cleaned by PureLink", cleaned)
-                    clipboard.setPrimaryClip(newClip)
-                    notifyUser()
-                }
-            }
-        } catch (e: Exception) {
-            // تجاهل الأخطاء العابرة
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::clipboard.isInitialized) {
+            clipboard.removePrimaryClipChangedListener(clipListener)
         }
+    }
+
+    private fun checkAndClean() {
+        // 1. التحقق من مفتاح التشغيل (زرار الستارة)
+        val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
+        val isMonitoringActive = prefs.getBoolean("monitoring_active", true)
+        
+        // لو المستخدم طافيه، لا تعمل شيء
+        if (!isMonitoringActive) return
+
+        if (!clipboard.hasPrimaryClip()) return
+        
+        val item = try { clipboard.primaryClip?.getItemAt(0) } catch (e: Exception) { return }
+        val text = item?.text?.toString() ?: return
+
+        if (!isDirty(text)) return
+        if (item.text != null && item.text.toString().contains("PureLink")) return
+
+        val cleaned = cleanUrl(text)
+        if (cleaned == text) return 
+
+        val newClip = ClipData.newPlainText("Cleaned by PureLink", cleaned)
+        clipboard.setPrimaryClip(newClip)
+        
+        notifyUser()
     }
 
     private fun notifyUser() {
@@ -82,14 +75,14 @@ class ClipboardService : AccessibilityService() {
 
         if (shouldVibrate) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(200, 255)) // أقصى قوة
+                vibrator.vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
-                vibrator.vibrate(200)
+                vibrator.vibrate(150)
             }
         }
 
         if (shouldToast) {
-            Toast.makeText(this, "Link Cleaned! 🧹", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Cleaned! 🧹", Toast.LENGTH_SHORT).show()
         }
     }
 
