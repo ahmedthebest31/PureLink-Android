@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PureLink</string>
+    <string name="service_description">Monitors and cleans clipboard links automatically.</string>
+</resources>
