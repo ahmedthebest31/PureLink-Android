@@ -11,19 +11,40 @@ android {
         applicationId "com.ahmedsamy"
         minSdk 26
         targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3.0" // رقم الإصدار اللي هيظهر في اسم الملف
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // هنا السر: إجبار استخدام الأدوات المثبتة
-    buildToolsVersion "35.0.0"
+    // 1. تعريف الختم (بيانات المفتاح)
+    signingConfigs {
+        release {
+            storeFile file('purelink-key.jks')
+            storePassword '123456'
+            keyAlias 'purelink_alias'
+            keyPassword '123456'
+        }
+    }
 
     buildTypes {
         release {
-            minifyEnabled false
+            // 2. استخدام الختم هنا
+            signingConfig signingConfigs.release
+            
+            // تفعيل الضغط والتصغير
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    // 3. كود التسمية التلقائية (عشان يطلع باسم التطبيق)
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "PureLink-v${variant.versionName}.apk"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -36,4 +57,9 @@ android {
 dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
