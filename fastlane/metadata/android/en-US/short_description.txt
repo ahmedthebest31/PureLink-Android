@@ -1,0 +1,1 @@
+A lightweight, privacy-focused URL cleaner and link manager.

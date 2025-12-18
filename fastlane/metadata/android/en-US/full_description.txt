@@ -1,0 +1,1 @@
+PureLink is an open-source Android application designed to enhance privacy by removing tracking parameters from URLs. It is lightweight, free, and optimized for accessibility and screen readers. Clean your links before sharing them.
