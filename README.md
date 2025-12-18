@@ -37,7 +37,7 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 
 Get the latest APK from the **Releases** page:
 
-[**👉 Download PureLink v3.0**](https://github.com/ahmedthebest31/PureLink-Android/releases)
+[**👉 Download PureLink v1.0**](https://github.com/ahmedthebest31/PureLink-Android/releases)
 
 > **Note:** This app is fully native, lightweight (~3MB), and requires no unnecessary permissions.
 
@@ -61,3 +61,4 @@ Contributions are welcome! Please note that this version utilizes `syscall` for 
 
 ### 📄 License
 MIT License
+

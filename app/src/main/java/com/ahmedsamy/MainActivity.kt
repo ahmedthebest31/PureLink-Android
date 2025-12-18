@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                 try { if (text.isNotEmpty()) { val d = String(Base64.decode(text, Base64.NO_WRAP)); inputField.setText(d); copyToClipboard(d) } } catch(e:Exception){}
             }
             R.id.action_uuid -> { val u = UUID.randomUUID().toString(); inputField.setText(u); copyToClipboard(u) }
-            R.id.action_about -> { AlertDialog.Builder(this).setTitle("About").setMessage("PureLink v3.0\nSafe & Native.\nAhmed Samy.").setPositiveButton("OK", null).show() }
+            R.id.action_about -> { AlertDialog.Builder(this).setTitle("About").setMessage("PureLink v1.0\nSafe & Native.\nAhmed Samy.").setPositiveButton("OK", null).show() }
         }
         return true
     }
@@ -237,3 +237,4 @@ class MainActivity : AppCompatActivity() {
         prefs.unregisterOnSharedPreferenceChangeListener(prefsListener)
     }
 }
+

@@ -11,8 +11,8 @@ android {
         applicationId "com.ahmedsamy"
         minSdk 26
         targetSdk 35
-        versionCode 3
-        versionName "3.0" // رقم الإصدار اللي هيظهر في اسم الملف
+        versionCode 1
+        versionName "1.0" // رقم الإصدار اللي هيظهر في اسم الملف
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -63,3 +63,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
+
