@@ -4,37 +4,29 @@ plugins {
 }
 
 android {
+    namespace 'com.ahmedsamy.purelink'
+    compileSdk 35
+
     dependenciesInfo {
         // Disables dependency metadata for privacy (IzzyOnDroid Req)
         includeInApk = false
         includeInBundle = false
     }
-    namespace 'com.ahmedsamy'
-    compileSdk 35
 
     defaultConfig {
-        applicationId "com.ahmedsamy"
+        applicationId "com.ahmedsamy.purelink"
         minSdk 26
         targetSdk 35
-        versionCode 1
-        versionName "1.0" // رقم الإصدار اللي هيظهر في اسم الملف
+        versionCode 2      // حدثته لـ 2 عشان التحديث الجديد
+        versionName "1.0.1" // حدثته لـ 1.0.1 زي ما اتفقنا
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // 1. تعريف الختم (بيانات المفتاح)
-    signingConfigs {
-        release {
-            storeFile file('purelink-key.jks')
-            storePassword '123456'
-            keyAlias 'purelink_alias'
-            keyPassword '123456'
-        }
-    }
+    // كان هنا فيه قوس زيادة } أنا شلته، وده اللي كان خارب الدنيا
 
     buildTypes {
         release {
-            // 2. استخدام الختم هنا
-            signingConfig signingConfigs.release
+            // signingConfig removed for F-Droid (تم إزالة التشفير عشانهم)
             
             // تفعيل الضغط والتصغير
             minifyEnabled true
@@ -43,7 +35,7 @@ android {
         }
     }
 
-    // 3. كود التسمية التلقائية (عشان يطلع باسم التطبيق)
+    // كود التسمية التلقائية (عشان يطلع باسم التطبيق)
     applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "PureLink-v${variant.versionName}.apk"
@@ -54,6 +46,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -68,5 +61,3 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
-
-

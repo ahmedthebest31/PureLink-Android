@@ -1,4 +1,4 @@
-package com.ahmedsamy
+package com.ahmedsamy.purelink
 
 import android.content.Context
 import android.content.Intent

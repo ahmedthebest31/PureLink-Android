@@ -1,4 +1,4 @@
-package com.ahmedsamy
+package com.ahmedsamy.purelink
 
 import android.accessibilityservice.AccessibilityService
 import android.content.ClipData

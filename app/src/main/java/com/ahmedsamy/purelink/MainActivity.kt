@@ -1,4 +1,4 @@
-package com.ahmedsamy
+package com.ahmedsamy.purelink
 
 import android.app.AlertDialog
 import android.content.ClipData
