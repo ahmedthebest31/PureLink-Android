@@ -4,6 +4,11 @@ plugins {
 }
 
 android {
+    dependenciesInfo {
+        // Disables dependency metadata for privacy (IzzyOnDroid Req)
+        includeInApk = false
+        includeInBundle = false
+    }
     namespace 'com.ahmedsamy'
     compileSdk 35
 
@@ -63,4 +68,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
+
 
