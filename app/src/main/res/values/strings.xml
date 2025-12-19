@@ -1,8 +1,15 @@
 <resources>
-    <string name="app_name">PureLink</string>
-    <string name="service_desc">PureLink Monitor for clipboard cleaning.</string>
+    <string name="app_name">Pure Link</string>
+
+    <string name="service_desc">Pure Link Monitor for clipboard cleaning</string>
+
     <string name="accessibility_title">Activate Monitor</string>
-    <string name="accessibility_desc">To clean links automatically in background (e.g. inside WhatsApp), PureLink needs Accessibility Service enabled.</string>
+    <string name="accessibility_desc">To clean links automatically in the background (e.g., from WhatsApp), Pure Link needs the Accessibility Service enabled.</string>
+    
     <string name="ok">Enable Now</string>
     <string name="cancel">Later</string>
-    <string name="clean_link_action">PureLink Clean</string> </resources>
+
+    <string name="clean_link_action">Clean with Pure Link</string>
+
+    <string name="accessibility_service_description">This service monitors your clipboard content to automatically detect, unshorten, and remove tracking parameters, ads, and malicious add-ons from copied links without needing to open the app. This feature runs silently in the background and is compatible with all applications.\n\nPrivacy Notice: Internet access is required solely to resolve shortened URLs to their original destination. Pure Link does not record, store, or share your personal data or clipboard content with any third parties.\n\nNote: Enabling this service is optional. If you prefer not to use it, you can manually paste links into the Pure Link app for cleaning.</string>
+</resources>

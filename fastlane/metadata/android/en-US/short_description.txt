@@ -1,1 +1,1 @@
-A lightweight, privacy-focused URL cleaner and link manager.
+Remove tracking from URLs, expand short links & protect privacy. Accessibility first.

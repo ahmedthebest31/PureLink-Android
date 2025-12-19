@@ -2,18 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
         tools:ignore="ProtectedPermissions" />
 
-    <application android:usesCleartextTraffic="true"
+    <application
         android:allowBackup="true"
-        android:icon="@android:drawable/sym_def_app_icon"
-        android:label="PureLink"
+        android:icon="@drawable/ic_logo"
+        android:label="Pure Link"
         android:theme="@style/Theme.AppCompat.NoActionBar">
 
         <activity
@@ -50,15 +48,17 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/service_config" />
         </service>
-            <service
+
+        <service
             android:name=".PureLinkTileService"
-            android:label="PureLink Monitor"
-            android:icon="@android:drawable/ic_menu_view"
+            android:label="Pure Link Monitor"
+            android:icon="@drawable/ic_logo"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
     </application>
 </manifest>
