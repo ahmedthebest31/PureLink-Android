@@ -17,25 +17,47 @@ android {
         applicationId "com.ahmedsamy.purelink"
         minSdk 26
         targetSdk 35
-        versionCode 2      // حدثته لـ 2 عشان التحديث الجديد
-        versionName "1.0.1" // حدثته لـ 1.0.1 زي ما اتفقنا
+        versionCode 2       
+        versionName "1.0.1" 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    // كان هنا فيه قوس زيادة } أنا شلته، وده اللي كان خارب الدنيا
+    // ---------------------------------------------------------
+    // بداية كود التوقيع الذكي (ده اللي كان ناقصك)
+    // ---------------------------------------------------------
+    signingConfigs {
+        release {
+            // بنحاول نقرأ ملف الخصائص السري keystore.properties
+            def keystoreFile = rootProject.file("keystore.properties")
+            if (keystoreFile.exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(keystoreFile))
+                
+                storeFile = file(props['storeFile'])
+                storePassword = props['storePassword']
+                keyAlias = props['keyAlias']
+                keyPassword = props['keyPassword']
+            }
+        }
+    }
+    // ---------------------------------------------------------
 
     buildTypes {
         release {
-            // signingConfig removed for F-Droid (تم إزالة التشفير عشانهم)
+            // هنا الشرط: لو إعدادات التوقيع اتقرت صح، استخدمها.
+            // لو لأ (زي عند F-Droid)، كمل من غير توقيع.
+            if (project.hasProperty('android.injected.signing.store.file') || rootProject.file("keystore.properties").exists()) {
+                signingConfig signingConfigs.release
+            }
             
-            // تفعيل الضغط والتصغير
+            // تفعيل الضغط والتصغير (مهم جداً عشان الحجم)
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-    // كود التسمية التلقائية (عشان يطلع باسم التطبيق)
+    // كود تغيير اسم الملف (ممتاز سيبه زي ما هو)
     applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "PureLink-v${variant.versionName}.apk"

@@ -3,39 +3,30 @@ Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and dev
 🛡️ PRIVACY & URL SANITIZATION
 
 • Deep Cleaning: Instantly removes tracking tags like "utm_", "fbclid", "gclid", and "ref" from shared links before you visit them.
-
 • Smart Unshortener: Safely expands shortened URLs (e.g., bit.ly, is.gd) in the background to reveal the true destination.
-
 • Bot-Proof Resolver: Uses advanced techniques to bypass server-side bot protections when resolving links.
 
 👁️ BACKGROUND MONITOR
 
 • Clipboard Guard: Runs silently to detect and clean copied links automatically.
-
 • Quick Settings Tile: Toggle the monitoring service instantly from your notification shade.
-
 • Haptic Feedback: Vibrates to confirm when a link has been processed.
 
 ♿ ACCESSIBILITY FIRST (Screen Reader Optimized)
 
 • Designed by a blind developer specifically for maximum efficiency with Screen Readers (TalkBack).
-
 • High-Contrast UI: Features a "Green on Black" terminal style, perfect for low-vision users and battery saving on AMOLED screens.
-
 • Fully labeled interactive elements for a seamless navigation experience.
 
 🛠️ DEVELOPER & SOCIAL TOOLS
 
 • WhatsApp Direct: Chat with any number immediately without saving it to contacts.
-
 • Telegram Direct: Open usernames directly.
-
 • Dev Utilities: Built-in Base64 Encoder/Decoder and UUID Generator.
 
 ⚡ SYSTEM INTEGRATION
 
 • Share Target: Share links directly from YouTube, Chrome, or Twitter to Pure Link for instant cleaning.
-
 • Process Text: Select any text system-wide -> Choose "Pure Link Clean" from the context menu.
 
 Pure Link is fully native, lightweight (~1MB), and respects your privacy with no unnecessary permissions.
