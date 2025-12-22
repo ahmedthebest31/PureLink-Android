@@ -11,8 +11,7 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
-        android:label="Pure Link"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:label="@string/app_name" >
 
         <activity
             android:name=".MainActivity"
@@ -40,7 +39,8 @@
         <service
             android:name=".ClipboardService"
             android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            tools:ignore="AccessibilityPolicy">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
