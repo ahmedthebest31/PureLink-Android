@@ -35,9 +35,8 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 
 ## 📥 Download Android App
 
-Get the latest APK from the **Releases** page:
-
-[**👉 Download PureLink v1.0**](https://github.com/ahmedthebest31/PureLink-Android/releases)
+[![Get it on IzzyOnDroid](fastlane/badge/izzyondroid.png)](https://apt.izzysoft.de/fdroid/index/apk/com.ahmedsamy.purelink)
+[![Get it on GitHub](fastlane/badge/github.png)](https://github.com/ahmedthebest31/PureLink-Android/releases)
 
 > **Note:** This app is fully native, lightweight (~3MB), and requires no unnecessary permissions.
 
@@ -45,7 +44,7 @@ Get the latest APK from the **Releases** page:
 
 ## 💻 PureLink for PC (Windows/Linux)
 
-Looking for this power on your desktop?
+Looking for this power on your desktop
 Check out **PureLink Desktop**, a high-performance system tool written in **Go (Golang)**.
 
 * **👻 Silent & Invisible:** Runs quietly in the **System Tray** (just like a screen reader). No terminal or command prompt required.
