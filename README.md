@@ -35,11 +35,13 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 
 ## 📥 Download Android App
 
-Get the latest APK from the **Releases** page:
+<a href="https://apt.izzysoft.de/fdroid/index/apk/com.ahmedsamy.purelink">
+  <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="60">
+</a>
 
-[**👉 Download PureLink v1.0**](https://github.com/ahmedthebest31/PureLink-Android/releases)
+also you can Get the latest APK from the [Releases page](https://github.com/ahmedthebest31/PureLink-Android/releases/tag/v1.0.1)
 
-> **Note:** This app is fully native, lightweight (~3MB), and requires no unnecessary permissions.
+> **Note:** This app is fully native, lightweight (~1MB), and requires no unnecessary permissions.
 
 ---
 
