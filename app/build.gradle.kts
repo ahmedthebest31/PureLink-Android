@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -27,17 +28,45 @@ android {
 
     // كان هنا فيه قوس زيادة } أنا شلته، وده اللي كان خارب الدنيا
 
-    buildTypes {
-        release {
-            // signingConfig removed for F-Droid (تم إزالة التشفير عشانهم)
+    signingConfigs {
+        val props = Properties()
+        val localProperties = File(rootDir, "signing.properties")
+        if (localProperties.exists()) {
+            localProperties.inputStream().use { props.load(it) }
+        }
+        getByName("debug") {
+            storeFile = file(props.getProperty("debug.store.file"))
+            storePassword = props.getProperty("debug.store.password")
+            keyAlias = props.getProperty("debug.key.alias")
+            keyPassword = props.getProperty("debug.key.password")
+        }
+        create("release") {
+            storeFile = file(props.getProperty("release.store.file"))
+            storePassword = props.getProperty("release.store.password")
+            keyAlias = props.getProperty("release.key.alias")
+            keyPassword = props.getProperty("release.key.password")
+        }
+    }
 
-            // تفعيل الضغط والتصغير
-            isMinifyEnabled = true
-            isShrinkResources = true
+    buildTypes {
+        getByName("debug") {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            isDebuggable = true
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
+        getByName("release") {
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
             )
+            isDebuggable = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
