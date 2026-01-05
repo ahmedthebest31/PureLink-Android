@@ -25,8 +25,9 @@ class MainActivity : ComponentActivity() {
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
 
+        // Passed resources to ViewModel for string resolution
         viewModel =
-            ViewModelProvider(this, MainViewModel.provideFactory(prefs, clipboardManager))[
+            ViewModelProvider(this, MainViewModel.provideFactory(prefs, clipboardManager, resources))[
                 MainViewModel::class.java]
 
         setContent {
@@ -64,9 +65,9 @@ class MainActivity : ComponentActivity() {
             askForBatteryOptimization()
         } else if (!isAccessibilityServiceEnabled()) {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            Toast.makeText(this, "Enable 'PureLink' Service", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.service_enable_prompt), Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "Service is already Running ✅", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.service_already_running), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -82,7 +83,7 @@ class MainActivity : ComponentActivity() {
             intent.data = "package:$packageName".toUri()
             startActivity(intent)
         } catch (_: Exception) {
-            Toast.makeText(this, "Battery optimization not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.battery_opt_unavailable), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -98,35 +99,35 @@ class MainActivity : ComponentActivity() {
 
     private fun openWhatsApp(text: String) {
         if (text.isEmpty()) {
-            Toast.makeText(this, "Paste number!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_paste_number), Toast.LENGTH_SHORT).show()
             return
         }
         val number = text.replace("+", "").replace(" ", "").replace("-", "")
         try {
             startActivity(Intent(Intent.ACTION_VIEW, "https://wa.me/$number".toUri()))
         } catch (_: Exception) {
-            Toast.makeText(this, "WhatsApp not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_whatsapp_unavailable), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun openTelegram(text: String) {
         if (text.isEmpty()) {
-            Toast.makeText(this, "Paste username!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_paste_username), Toast.LENGTH_SHORT).show()
             return
         }
         try {
             val username = text.replace("@", "")
             startActivity(Intent(Intent.ACTION_VIEW, "https://t.me/$username".toUri()))
         } catch (_: Exception) {
-            Toast.makeText(this, "Telegram not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_telegram_unavailable), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun showAboutDialog() {
         AlertDialog.Builder(this)
-            .setTitle("About")
-            .setMessage("PureLink v1.0\nSafe & Native.\nAhmed Samy.")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.about_title))
+            .setMessage(getString(R.string.about_message))
+            .setPositiveButton(getString(R.string.btn_ok), null)
             .show()
     }
 }

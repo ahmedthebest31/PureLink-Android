@@ -1,15 +1,69 @@
 <resources>
     <string name="app_name">Pure Link</string>
-
     <string name="service_desc">Pure Link Monitor for clipboard cleaning</string>
 
     <string name="accessibility_title">Activate Monitor</string>
     <string name="accessibility_desc">To clean links automatically in the background (e.g., from WhatsApp), Pure Link needs the Accessibility Service enabled.</string>
-    
+    <string name="accessibility_service_description">This service monitors your clipboard content to automatically detect, unshorten, and remove tracking parameters, ads, and malicious add-ons from copied links without needing to open the app. This feature runs silently in the background and is compatible with all applications.
+
+Privacy Notice: Internet access is required solely to resolve shortened URLs to their original destination. Pure Link does not record, store, or share your personal data or clipboard content with any third parties.
+
+Note: Enabling this service is optional. If you prefer not to use it, you can manually paste links into the Pure Link app for cleaning.</string>
+
     <string name="ok">Enable Now</string>
     <string name="cancel">Later</string>
-
     <string name="clean_link_action">Clean with Pure Link</string>
 
-    <string name="accessibility_service_description">This service monitors your clipboard content to automatically detect, unshorten, and remove tracking parameters, ads, and malicious add-ons from copied links without needing to open the app. This feature runs silently in the background and is compatible with all applications.\n\nPrivacy Notice: Internet access is required solely to resolve shortened URLs to their original destination. Pure Link does not record, store, or share your personal data or clipboard content with any third parties.\n\nNote: Enabling this service is optional. If you prefer not to use it, you can manually paste links into the Pure Link app for cleaning.</string>
+    <!-- UI Main Screen -->
+    <string name="app_title">->_ PureLink</string>
+    <string name="cleaned_count_desc">Cleaned: %1$d items</string>
+    <string name="menu_desc">Menu</string>
+
+    <string name="status_active">Status: Active 🛡️</string>
+    <string name="status_paused">Status: Paused ⏸️</string>
+    <string name="status_desc_active">Status: Active</string>
+    <string name="status_desc_paused">Status: Paused</string>
+    <string name="monitoring_label">Monitoring Clipboard</string>
+    <string name="btn_pause">PAUSE</string>
+    <string name="btn_resume">RESUME</string>
+
+    <string name="input_hint">Paste Input here...</string>
+    <string name="btn_paste">PASTE</string>
+    <string name="btn_execute">EXECUTE</string>
+    <string name="btn_resolving">RESOLVING...</string>
+    <string name="input_field_desc">URL Input Field</string>
+
+    <string name="section_system_power">SYSTEM_POWER</string>
+    <string name="service_card_title">Accessibility Service</string>
+    <string name="service_card_subtitle">Enable Battery &amp; Access</string>
+    
+    <string name="setting_unshorten">Unshorten URLs</string>
+    <string name="setting_haptic">Haptic Feedback</string>
+    <string name="setting_verbose">Verbose Mode (Toasts)</string>
+
+    <!-- Menu Items -->
+    <string name="menu_social">Social Tools</string>
+    <string name="menu_dev">Dev Tools</string>
+    <string name="menu_about">About</string>
+    <string name="menu_whatsapp">Open as WhatsApp</string>
+    <string name="menu_telegram">Open as Telegram</string>
+    <string name="menu_base64_encode">Base64 Encode</string>
+    <string name="menu_base64_decode">Base64 Decode</string>
+    <string name="menu_uuid">Generate UUID</string>
+
+    <!-- Toasts & Messages -->
+    <string name="toast_done">DONE! 🚀</string>
+    <string name="toast_cleaned">Cleaned! 🧹</string>
+    <string name="toast_paste_number">Paste number!</string>
+    <string name="toast_paste_username">Paste username!</string>
+    <string name="toast_whatsapp_unavailable">WhatsApp not available</string>
+    <string name="toast_telegram_unavailable">Telegram not available</string>
+    <string name="toast_base64_invalid">Invalid Base64</string>
+    <string name="service_enable_prompt">Enable \'PureLink\' Service</string>
+    <string name="service_already_running">Service is already Running ✅</string>
+    <string name="battery_opt_unavailable">Battery optimization not available</string>
+    
+    <string name="about_title">About</string>
+    <string name="about_message">PureLink v1.0\nSafe &amp; Native.\nAhmed Samy.</string>
+    <string name="btn_ok">OK</string>
 </resources>

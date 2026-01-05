@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.purelink.MainViewModel
+import com.ahmedsamy.purelink.R
 import com.ahmedsamy.purelink.ui.components.SettingsSwitch
 import com.ahmedsamy.purelink.ui.components.TerminalCard
 import com.ahmedsamy.purelink.ui.theme.ButtonActive
@@ -77,7 +79,6 @@ fun MainScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    // Handle toast messages
     LaunchedEffect(uiState.toastMessage) {
         uiState.toastMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -88,7 +89,7 @@ fun MainScreen(
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
-        // Top App Bar
+        
         PureLinkTopBar(
             cleanCount = uiState.cleanCount,
             inputText = uiState.inputText,
@@ -107,7 +108,6 @@ fun MainScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
         ) {
-            // Status Card
             StatusCard(
                 isActive = uiState.isMonitoringActive,
                 onPauseResumeClick = viewModel::toggleMonitoring
@@ -115,7 +115,6 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Input Card
             InputCard(
                 inputText = uiState.inputText,
                 isResolving = uiState.isResolving,
@@ -126,15 +125,13 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // System Power Section
             Text(
-                text = "SYSTEM_POWER",
+                text = stringResource(R.string.section_system_power),
                 color = TextMuted,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // Accessibility Service Card
             ServiceCard(
                 isEnabled = uiState.isServiceEnabled,
                 onCardClick = onServiceClick,
@@ -143,7 +140,6 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Settings Section
             SettingsSection(
                 unshortenEnabled = uiState.unshortenEnabled,
                 vibrateEnabled = uiState.vibrateEnabled,
@@ -171,6 +167,8 @@ private fun PureLinkTopBar(
     var showMainMenu by remember { mutableStateOf(false) }
     var showSocialMenu by remember { mutableStateOf(false) }
     var showDevMenu by remember { mutableStateOf(false) }
+    
+    val cleanedDesc = stringResource(R.string.cleaned_count_desc, cleanCount)
 
     TopAppBar(
         title = {
@@ -179,7 +177,7 @@ private fun PureLinkTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = ">_ PureLink",
+                    text = stringResource(R.string.app_title),
                     color = TerminalGreen,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -194,7 +192,7 @@ private fun PureLinkTopBar(
                     fontFamily = FontFamily.Monospace,
                     modifier =
                         Modifier.semantics {
-                            contentDescription = "Cleaned: $cleanCount items"
+                            contentDescription = cleanedDesc
                         }
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -205,32 +203,27 @@ private fun PureLinkTopBar(
                 IconButton(onClick = { showMainMenu = true }) {
                     Icon(
                         Icons.Default.MoreVert,
-                        contentDescription = "Menu",
+                        contentDescription = stringResource(R.string.menu_desc),
                         tint = TextPrimary
                     )
                 }
                 DropdownMenu(expanded = showMainMenu, onDismissRequest = { showMainMenu = false }) {
-                    // Social Tools
                     DropdownMenuItem(
-                        text = { Text("Social Tools") },
+                        text = { Text(stringResource(R.string.menu_social)) },
                         onClick = {
                             showMainMenu = false
                             showSocialMenu = true
                         }
                     )
-
-                    // Dev Tools
                     DropdownMenuItem(
-                        text = { Text("Dev Tools") },
+                        text = { Text(stringResource(R.string.menu_dev)) },
                         onClick = {
                             showMainMenu = false
                             showDevMenu = true
                         }
                     )
-
-                    // About
                     DropdownMenuItem(
-                        text = { Text("About") },
+                        text = { Text(stringResource(R.string.menu_about)) },
                         onClick = {
                             showMainMenu = false
                             onAboutClick()
@@ -238,19 +231,18 @@ private fun PureLinkTopBar(
                     )
                 }
 
-                // Social Tools Menu
                 DropdownMenu(
                     expanded = showSocialMenu,
                     onDismissRequest = { showSocialMenu = false }) {
                     DropdownMenuItem(
-                        text = { Text("Open as WhatsApp") },
+                        text = { Text(stringResource(R.string.menu_whatsapp)) },
                         onClick = {
                             showSocialMenu = false
                             onWhatsAppClick(inputText)
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Open as Telegram") },
+                        text = { Text(stringResource(R.string.menu_telegram)) },
                         onClick = {
                             showSocialMenu = false
                             onTelegramClick(inputText)
@@ -258,24 +250,23 @@ private fun PureLinkTopBar(
                     )
                 }
 
-                // Dev Tools Menu
                 DropdownMenu(expanded = showDevMenu, onDismissRequest = { showDevMenu = false }) {
                     DropdownMenuItem(
-                        text = { Text("Base64 Encode") },
+                        text = { Text(stringResource(R.string.menu_base64_encode)) },
                         onClick = {
                             showDevMenu = false
                             onBase64Encode()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Base64 Decode") },
+                        text = { Text(stringResource(R.string.menu_base64_decode)) },
                         onClick = {
                             showDevMenu = false
                             onBase64Decode()
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Generate UUID") },
+                        text = { Text(stringResource(R.string.menu_uuid)) },
                         onClick = {
                             showDevMenu = false
                             onGenerateUuid()
@@ -293,22 +284,24 @@ private fun PureLinkTopBar(
 
 @Composable
 private fun StatusCard(isActive: Boolean, onPauseResumeClick: () -> Unit) {
+    val statusText = if (isActive) stringResource(R.string.status_active) else stringResource(R.string.status_paused)
+    val statusDesc = if (isActive) stringResource(R.string.status_desc_active) else stringResource(R.string.status_desc_paused)
+
     TerminalCard(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = if (isActive) "Status: Active 🛡️" else "Status: Paused ⏸️",
+                    text = statusText,
                     color = if (isActive) TerminalGreen else StatusPaused,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     fontFamily = FontFamily.Monospace,
                     modifier =
                         Modifier.semantics {
-                            contentDescription =
-                                if (isActive) "Status: Active" else "Status: Paused"
+                            contentDescription = statusDesc
                         }
                 )
-                Text(text = "Monitoring Clipboard", color = TextSecondary, fontSize = 12.sp)
+                Text(text = stringResource(R.string.monitoring_label), color = TextSecondary, fontSize = 12.sp)
             }
             Button(
                 onClick = onPauseResumeClick,
@@ -318,7 +311,7 @@ private fun StatusCard(isActive: Boolean, onPauseResumeClick: () -> Unit) {
                     )
             ) {
                 Text(
-                    text = if (isActive) "PAUSE" else "RESUME",
+                    text = if (isActive) stringResource(R.string.btn_pause) else stringResource(R.string.btn_resume),
                     color = TextPrimary,
                     fontSize = 12.sp
                 )
@@ -335,6 +328,8 @@ private fun InputCard(
     onPasteClick: () -> Unit,
     onExecuteClick: () -> Unit
 ) {
+    val inputDesc = stringResource(R.string.input_field_desc)
+
     TerminalCard(modifier = Modifier.fillMaxWidth()) {
         Column {
             BasicTextField(
@@ -342,14 +337,15 @@ private fun InputCard(
                 onValueChange = onInputChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(48.dp)
+                    .semantics { contentDescription = inputDesc },
                 textStyle = TextStyle(color = TextPrimary, fontFamily = FontFamily.Monospace),
                 cursorBrush = SolidColor(TerminalGreen),
                 decorationBox = { innerTextField ->
                     Box {
                         if (inputText.isEmpty()) {
                             Text(
-                                text = "Paste Input here...",
+                                text = stringResource(R.string.input_hint),
                                 color = TextHint,
                                 fontFamily = FontFamily.Monospace
                             )
@@ -366,7 +362,7 @@ private fun InputCard(
                     onClick = onPasteClick,
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = ButtonSecondary)
-                ) { Text(text = "PASTE", color = TextLighter) }
+                ) { Text(text = stringResource(R.string.btn_paste), color = TextLighter) }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = onExecuteClick,
@@ -374,7 +370,10 @@ private fun InputCard(
                     enabled = !isResolving,
                     colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
                 ) {
-                    Text(text = if (isResolving) "RESOLVING..." else "EXECUTE", color = TextPrimary)
+                    Text(
+                        text = if (isResolving) stringResource(R.string.btn_resolving) else stringResource(R.string.btn_execute),
+                        color = TextPrimary
+                    )
                 }
             }
         }
@@ -389,12 +388,12 @@ private fun ServiceCard(isEnabled: Boolean, onCardClick: () -> Unit, onSwitchCli
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Accessibility Service",
+                    text = stringResource(R.string.service_card_title),
                     color = TextPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
-                Text(text = "Enable Battery & Access", color = TextLighter, fontSize = 12.sp)
+                Text(text = stringResource(R.string.service_card_subtitle), color = TextLighter, fontSize = 12.sp)
             }
             Switch(
                 checked = isEnabled,
@@ -420,19 +419,19 @@ private fun SettingsSection(
 ) {
     Column {
         SettingsSwitch(
-            label = "Unshorten URLs",
+            label = stringResource(R.string.setting_unshorten),
             checked = unshortenEnabled,
             onCheckedChange = onUnshortenChange
         )
         HorizontalDivider(color = DividerDark)
         SettingsSwitch(
-            label = "Haptic Feedback",
+            label = stringResource(R.string.setting_haptic),
             checked = vibrateEnabled,
             onCheckedChange = onVibrateChange
         )
         HorizontalDivider(color = DividerDark)
         SettingsSwitch(
-            label = "Verbose Mode (Toasts)",
+            label = stringResource(R.string.setting_verbose),
             checked = toastEnabled,
             onCheckedChange = onToastChange
         )
