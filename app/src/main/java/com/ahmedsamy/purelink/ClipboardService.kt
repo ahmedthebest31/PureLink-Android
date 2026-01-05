@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import androidx.core.content.edit
+import com.ahmedsamy.purelink.utils.UrlCleaner
 
 @SuppressLint("AccessibilityPolicy")
 class ClipboardService : AccessibilityService() {
@@ -32,7 +33,11 @@ class ClipboardService : AccessibilityService() {
 
     private val clipListener = OnPrimaryClipChangedListener {
         Log.d(TAG, "Clipboard changed! isProcessing=$isProcessing")
-        checkAndClean()
+        try {
+            checkAndClean()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in checkAndClean", e)
+        }
     }
 
     override fun onServiceConnected() {
@@ -42,7 +47,6 @@ class ClipboardService : AccessibilityService() {
         vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
         clipboard.addPrimaryClipChangedListener(clipListener)
 
-        // التأكد إن الحالة الافتراضية "شغال" عند أول تشغيل
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         if (!prefs.contains("monitoring_active")) {
             prefs.edit { putBoolean("monitoring_active", true) }
@@ -60,17 +64,14 @@ class ClipboardService : AccessibilityService() {
     }
 
     private fun checkAndClean() {
-        // Prevent re-entry when we set the clipboard ourselves
         if (isProcessing) {
             Log.d(TAG, "Skipping - already processing")
             return
         }
 
-        // 1. التحقق من مفتاح التشغيل (زرار الستارة)
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         val isMonitoringActive = prefs.getBoolean("monitoring_active", true)
 
-        // لو المستخدم طافيه، لا تعمل شيء
         if (!isMonitoringActive) {
             Log.d(TAG, "Skipping - monitoring inactive")
             return
@@ -81,7 +82,6 @@ class ClipboardService : AccessibilityService() {
             return
         }
 
-        // Check if this clip was already processed by us
         val clipLabel = clipboard.primaryClip?.description?.label?.toString() ?: ""
         Log.d(TAG, "Clip label: '$clipLabel'")
         if (clipLabel.contains("PureLink", ignoreCase = true)) {
@@ -89,13 +89,12 @@ class ClipboardService : AccessibilityService() {
             return
         }
 
-        val item =
-                try {
-                    clipboard.primaryClip?.getItemAt(0)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error getting clip item", e)
-                    return
-                }
+        val item = try {
+            clipboard.primaryClip?.getItemAt(0)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting clip item", e)
+            return
+        }
         val text = item?.text?.toString()
 
         if (text.isNullOrBlank()) {
@@ -103,48 +102,36 @@ class ClipboardService : AccessibilityService() {
             return
         }
 
-        Log.d(TAG, "Clipboard text: $text")
+        // Use UrlCleaner to handle mixed text (multiple URLs in one block)
+        val cleaned = UrlCleaner.cleanMixedText(text)
 
-        // Check if it looks like a URL
-        if (!text.contains("http")) {
-            Log.d(TAG, "Skipping - not a URL")
+        if (cleaned == text) {
+            Log.d(TAG, "Skipping - no changes needed")
             return
         }
 
-        if (!isDirty(text)) {
-            Log.d(TAG, "Skipping - URL is clean (no tracking params)")
-            return
-        }
-
-        Log.d(TAG, "URL is dirty, cleaning...")
-
-        val cleaned = cleanUrl(text)
+        Log.d(TAG, "Found dirty URLs. Cleaning...")
         Log.d(TAG, "Original: $text")
         Log.d(TAG, "Cleaned:  $cleaned")
 
-        if (cleaned == text) {
-            Log.d(TAG, "Skipping - cleaned URL is same as original")
-            return
-        }
-
-        // Set flag BEFORE modifying clipboard
         isProcessing = true
         Log.d(TAG, "Setting isProcessing = true")
 
-        val newClip = ClipData.newPlainText("Cleaned by PureLink", cleaned)
-        clipboard.setPrimaryClip(newClip)
-        Log.d(TAG, "Clipboard updated with cleaned URL")
+        try {
+            val newClip = ClipData.newPlainText("Cleaned by PureLink", cleaned)
+            clipboard.setPrimaryClip(newClip)
+            Log.d(TAG, "Clipboard updated with cleaned content")
+            
+            notifyUser()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update clipboard", e)
+        }
 
-        // Reset flag after a delay to allow the listener callback to complete
-        handler.postDelayed(
-                {
-                    isProcessing = false
-                    Log.d(TAG, "Reset isProcessing = false")
-                },
-                500
-        )
-
-        notifyUser()
+        // Reset flag after delay
+        handler.postDelayed({
+            isProcessing = false
+            Log.d(TAG, "Reset isProcessing = false")
+        }, 500)
     }
 
     private fun notifyUser() {
@@ -157,72 +144,7 @@ class ClipboardService : AccessibilityService() {
         }
 
         if (shouldToast) {
-            Toast.makeText(this, "Cleaned! 🧹", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.toast_cleaned), Toast.LENGTH_SHORT).show()
         }
-    }
-
-    private fun isDirty(url: String): Boolean {
-        val trackingPatterns =
-                listOf(
-                        "utm_",
-                        "fbclid",
-                        "gclid",
-                        "si=",
-                        "ref=",
-                        "mc_eid",
-                        "mc_cid",
-                        "_ga",
-                        "yclid",
-                        "affiliate"
-                )
-        val hasDirty = trackingPatterns.any { url.contains(it, ignoreCase = true) }
-        Log.d(TAG, "isDirty check: $hasDirty")
-        return hasDirty
-    }
-
-    private fun cleanUrl(url: String): String {
-        var result = url
-
-        // More comprehensive tracking parameter list
-        val trackingParams =
-                listOf(
-                        "utm_source",
-                        "utm_medium",
-                        "utm_campaign",
-                        "utm_term",
-                        "utm_content",
-                        "fbclid",
-                        "gclid",
-                        "ref",
-                        "si",
-                        "s",
-                        "mc_eid",
-                        "mc_cid",
-                        "_ga",
-                        "yclid",
-                        "affiliate",
-                        "source",
-                        "campaign"
-                )
-
-        // Build regex pattern for all tracking params
-        val paramPattern = trackingParams.joinToString("|") { Regex.escape(it) }
-        val regex = Regex("[?&]($paramPattern)=[^&]*", RegexOption.IGNORE_CASE)
-
-        result = regex.replace(result, "")
-
-        // Clean up leftover ? or & at the end or double &&
-        result = result.replace(Regex("\\?&"), "?")
-        result = result.replace(Regex("&&+"), "&")
-        if (result.endsWith("?") || result.endsWith("&")) {
-            result = result.dropLast(1)
-        }
-        // If we removed all params but still have a trailing ?, remove it
-        if (result.endsWith("?")) {
-            result = result.dropLast(1)
-        }
-
-        Log.d(TAG, "cleanUrl result: $result")
-        return result
     }
 }

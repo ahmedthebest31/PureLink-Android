@@ -3,13 +3,13 @@ package com.ahmedsamy.purelink
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.util.Base64
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import java.net.HttpURLConnection
-import java.net.URL
-import java.util.UUID
+import androidx.core.content.edit
+import com.ahmedsamy.purelink.utils.UrlCleaner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.content.edit
+import java.util.UUID
 
 data class MainUiState(
         val isMonitoringActive: Boolean = true,
@@ -33,7 +33,8 @@ data class MainUiState(
 
 class MainViewModel(
         private val prefs: SharedPreferences,
-        private val clipboardManager: ClipboardManager
+        private val clipboardManager: ClipboardManager,
+        private val resources: Resources
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -92,14 +93,20 @@ class MainViewModel(
         if (text.isEmpty()) return
 
         if (_uiState.value.unshortenEnabled && text.contains("http")) {
-            _uiState.update { it.copy(isResolving = true, toastMessage = "Resolving...") }
+            _uiState.update { it.copy(isResolving = true, toastMessage = resources.getString(R.string.btn_resolving)) }
             viewModelScope.launch {
-                val resolved = withContext(Dispatchers.IO) { resolveUrl(text) }
-                val cleaned = cleanUrl(resolved)
+                // If unshorten is enabled, try to resolve first.
+                // Note: Current resolve logic is optimized for single URL. 
+                // Mixed text resolution is a future enhancement.
+                val resolved = withContext(Dispatchers.IO) { 
+                    UrlCleaner.resolveUrl(text) 
+                }
+                val cleaned = UrlCleaner.cleanMixedText(resolved)
                 finalizeClean(cleaned)
             }
         } else {
-            finalizeClean(cleanUrl(text))
+            val cleaned = UrlCleaner.cleanMixedText(text)
+            finalizeClean(cleaned)
         }
     }
 
@@ -107,7 +114,7 @@ class MainViewModel(
         _uiState.update { it.copy(inputText = cleanedText, isResolving = false) }
         copyToClipboard(cleanedText)
         incrementStats()
-        showToast("DONE! 🚀")
+        showToast(resources.getString(R.string.toast_done))
     }
 
     private fun incrementStats() {
@@ -149,7 +156,7 @@ class MainViewModel(
                 _uiState.update { it.copy(inputText = decoded) }
                 copyToClipboard(decoded)
             } catch (_: Exception) {
-                showToast("Invalid Base64")
+                showToast(resources.getString(R.string.toast_base64_invalid))
             }
         }
     }
@@ -162,11 +169,11 @@ class MainViewModel(
 
     fun handleIncomingText(text: String?) {
         if (!text.isNullOrEmpty()) {
-            val cleaned = cleanUrl(text)
+            val cleaned = UrlCleaner.cleanMixedText(text)
             _uiState.update { it.copy(inputText = cleaned) }
             copyToClipboard(cleaned)
             incrementStats()
-            showToast("DONE! 🚀")
+            showToast(resources.getString(R.string.toast_done))
         }
     }
 
@@ -182,31 +189,6 @@ class MainViewModel(
         clipboardManager.setPrimaryClip(ClipData.newPlainText("PureLink", text))
     }
 
-    private fun cleanUrl(url: String): String {
-        var result = url
-        val pattern = Regex("([?&](utm_[^=&]+|fbclid|gclid|ref|s|si)=[^&]*)")
-        result = pattern.replace(result, "")
-        if (result.endsWith("?") || result.endsWith("&")) {
-            result = result.dropLast(1)
-        }
-        return result
-    }
-
-    private fun resolveUrl(shortUrl: String): String {
-        return try {
-            var url = shortUrl.trim()
-            if (!url.startsWith("http")) url = "https://$url"
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0")
-            connection.instanceFollowRedirects = false
-            connection.connect()
-            val location = connection.getHeaderField("Location") ?: connection.url.toString()
-            location.ifEmpty { shortUrl }
-        } catch (_: Exception) {
-            shortUrl
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         prefs.unregisterOnSharedPreferenceChangeListener(prefsListener)
@@ -215,12 +197,13 @@ class MainViewModel(
     companion object {
         fun provideFactory(
                 prefs: SharedPreferences,
-                clipboardManager: ClipboardManager
+                clipboardManager: ClipboardManager,
+                resources: Resources
         ): ViewModelProvider.Factory =
                 object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                        return MainViewModel(prefs, clipboardManager) as T
+                        return MainViewModel(prefs, clipboardManager, resources) as T
                     }
                 }
     }
