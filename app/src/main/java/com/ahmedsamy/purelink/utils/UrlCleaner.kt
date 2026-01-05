@@ -52,7 +52,7 @@ object UrlCleaner {
         result = PARAMS_REGEX.replace(result, "")
 
         // Clean up malformed query strings (e.g. "?&" -> "?", "&&" -> "&")
-        result = result.replace(Regex("?&?"), "?")
+        result = result.replace(Regex("\\?&"), "?")
         result = result.replace(Regex("&&+"), "&")
         
         // Remove trailing separators
@@ -67,22 +67,59 @@ object UrlCleaner {
     }
 
     /**
+     * Processes the text: finds URLs, optionally unshortens them, and cleans them.
+     * Handles mixed text with multiple URLs.
+     */
+    suspend fun processText(text: String, unshorten: Boolean): String = withContext(Dispatchers.IO) {
+        val matches = URL_EXTRACTOR_REGEX.findAll(text).toList()
+        if (matches.isEmpty()) return@withContext text
+
+        val uniqueUrls = matches.map { it.value }.distinct()
+        val urlMap = mutableMapOf<String, String>()
+
+        uniqueUrls.forEach { url ->
+            var processed = url
+            if (unshorten) {
+                processed = resolveUrl(url)
+            }
+            processed = cleanSingleUrl(processed)
+            urlMap[url] = processed
+        }
+
+        URL_EXTRACTOR_REGEX.replace(text) { match ->
+            urlMap[match.value] ?: match.value
+        }
+    }
+
+    /**
      * Resolves shortened URLs (e.g., bit.ly) to their destination.
      * Suspend function for background execution.
      */
     suspend fun resolveUrl(shortUrl: String): String = withContext(Dispatchers.IO) {
         try {
             var urlStr = shortUrl.trim()
+            // Validate URL format before attempting connection to avoid MalformedURLException on garbage
             if (!urlStr.startsWith("http")) urlStr = "https://$urlStr"
+            
+            // Basic validation: must contain a host
+            try {
+                val u = URL(urlStr)
+                if (u.host.isNullOrEmpty()) return@withContext shortUrl
+            } catch (e: Exception) {
+                return@withContext shortUrl
+            }
             
             val connection = URL(urlStr).openConnection() as HttpURLConnection
             connection.setRequestProperty("User-Agent", "Mozilla/5.0")
             connection.instanceFollowRedirects = false
+            connection.connectTimeout = 5000 // 5s timeout
+            connection.readTimeout = 5000
             connection.connect()
             
             val location = connection.getHeaderField("Location") ?: connection.url.toString()
             if (location.isNotEmpty()) location else shortUrl
         } catch (e: Exception) {
+            e.printStackTrace()
             shortUrl
         }
     }
