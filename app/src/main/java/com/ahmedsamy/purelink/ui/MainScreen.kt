@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -67,6 +68,11 @@ import com.ahmedsamy.purelink.ui.theme.TextMuted
 import com.ahmedsamy.purelink.ui.theme.TextPrimary
 import com.ahmedsamy.purelink.ui.theme.TextSecondary
 
+// Enum for simple state-based navigation
+enum class Screen {
+    HOME, HISTORY
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -78,6 +84,9 @@ fun MainScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    
+    // Simple Navigation State
+    var currentScreen by remember { mutableStateOf(Screen.HOME) }
 
     LaunchedEffect(uiState.toastMessage) {
         uiState.toastMessage?.let { message ->
@@ -86,68 +95,78 @@ fun MainScreen(
         }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
-        
-        PureLinkTopBar(
-            cleanCount = uiState.cleanCount,
-            inputText = uiState.inputText,
-            onWhatsAppClick = onWhatsAppClick,
-            onTelegramClick = onTelegramClick,
-            onBase64Encode = viewModel::encodeBase64,
-            onBase64Decode = viewModel::decodeBase64,
-            onGenerateUuid = viewModel::generateUuid,
-            onAboutClick = onAboutClick
+    if (currentScreen == Screen.HISTORY) {
+        HistoryScreen(
+            viewModel = viewModel,
+            onBackClick = { currentScreen = Screen.HOME },
+            onCopyClick = { viewModel.copyToClipboard(it) },
+            onOpenClick = { viewModel.openUrl(it) }
         )
-
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
-        ) {
-            StatusCard(
-                isActive = uiState.isMonitoringActive,
-                onPauseResumeClick = viewModel::toggleMonitoring
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            InputCard(
+    } else {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)) {
+            
+            PureLinkTopBar(
+                cleanCount = uiState.cleanCount,
                 inputText = uiState.inputText,
-                isResolving = uiState.isResolving,
-                onInputChange = viewModel::updateInputText,
-                onPasteClick = viewModel::pasteFromClipboard,
-                onExecuteClick = viewModel::executeClean
+                onWhatsAppClick = onWhatsAppClick,
+                onTelegramClick = onTelegramClick,
+                onBase64Encode = viewModel::encodeBase64,
+                onBase64Decode = viewModel::decodeBase64,
+                onGenerateUuid = viewModel::generateUuid,
+                onAboutClick = onAboutClick,
+                onHistoryClick = { currentScreen = Screen.HISTORY }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(16.dp)
+            ) {
+                StatusCard(
+                    isActive = uiState.isMonitoringActive,
+                    onPauseResumeClick = viewModel::toggleMonitoring
+                )
 
-            Text(
-                text = stringResource(R.string.section_system_power),
-                color = TextMuted,
-                fontFamily = FontFamily.Monospace,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+                Spacer(modifier = Modifier.height(24.dp))
 
-            ServiceCard(
-                isEnabled = uiState.isServiceEnabled,
-                onCardClick = onServiceClick,
-                onSwitchClick = onServiceClick
-            )
+                InputCard(
+                    inputText = uiState.inputText,
+                    isResolving = uiState.isResolving,
+                    onInputChange = viewModel::updateInputText,
+                    onPasteClick = viewModel::pasteFromClipboard,
+                    onExecuteClick = viewModel::executeClean
+                )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            SettingsSection(
-                unshortenEnabled = uiState.unshortenEnabled,
-                vibrateEnabled = uiState.vibrateEnabled,
-                toastEnabled = uiState.toastEnabled,
-                onUnshortenChange = viewModel::setUnshortenEnabled,
-                onVibrateChange = viewModel::setVibrateEnabled,
-                onToastChange = viewModel::setToastEnabled
-            )
+                Text(
+                    text = stringResource(R.string.section_system_power),
+                    color = TextMuted,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                ServiceCard(
+                    isEnabled = uiState.isServiceEnabled,
+                    onCardClick = onServiceClick,
+                    onSwitchClick = onServiceClick
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SettingsSection(
+                    unshortenEnabled = uiState.unshortenEnabled,
+                    vibrateEnabled = uiState.vibrateEnabled,
+                    toastEnabled = uiState.toastEnabled,
+                    onUnshortenChange = viewModel::setUnshortenEnabled,
+                    onVibrateChange = viewModel::setVibrateEnabled,
+                    onToastChange = viewModel::setToastEnabled
+                )
+            }
         }
     }
 }
@@ -162,7 +181,8 @@ private fun PureLinkTopBar(
     onBase64Encode: () -> Unit,
     onBase64Decode: () -> Unit,
     onGenerateUuid: () -> Unit,
-    onAboutClick: () -> Unit
+    onAboutClick: () -> Unit,
+    onHistoryClick: () -> Unit
 ) {
     var showMainMenu by remember { mutableStateOf(false) }
     var showSocialMenu by remember { mutableStateOf(false) }
@@ -199,6 +219,15 @@ private fun PureLinkTopBar(
             }
         },
         actions = {
+             // History Icon
+            IconButton(onClick = onHistoryClick) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = stringResource(R.string.desc_history_icon),
+                    tint = TextPrimary
+                )
+            }
+
             Box {
                 IconButton(onClick = { showMainMenu = true }) {
                     Icon(

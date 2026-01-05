@@ -25,13 +25,15 @@ class MainActivity : ComponentActivity() {
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
 
-        // Passed resources to ViewModel for string resolution
         viewModel =
-            ViewModelProvider(this, MainViewModel.provideFactory(prefs, clipboardManager, resources))[
+            ViewModelProvider(this, MainViewModel.provideFactory(applicationContext, prefs, clipboardManager, resources))[
                 MainViewModel::class.java]
 
         setContent {
             PureLinkTheme {
+                // Since we don't use Navigation Compose, MainScreen now handles its own internal navigation state
+                // or we pass a simple callback. But wait, MainScreen was monolithic.
+                // Refactoring: MainScreen will now decide whether to show Home or History.
                 MainScreen(
                     viewModel = viewModel,
                     onServiceClick = ::handleServiceClick,

@@ -51,6 +51,14 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="menu_base64_decode">Base64 Decode</string>
     <string name="menu_uuid">Generate UUID</string>
 
+    <!-- History Screen -->
+    <string name="history_title">Recent History</string>
+    <string name="btn_back">Back</string>
+    <string name="history_empty">No recent history</string>
+    <string name="desc_copy_link">Copy link: %1$s</string>
+    <string name="desc_open_link">Open link: %1$s</string>
+    <string name="desc_history_icon">View History</string>
+
     <!-- Toasts & Messages -->
     <string name="toast_done">DONE! 🚀</string>
     <string name="toast_cleaned">Cleaned! 🧹</string>
@@ -62,6 +70,8 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="service_enable_prompt">Enable \'PureLink\' Service</string>
     <string name="service_already_running">Service is already Running ✅</string>
     <string name="battery_opt_unavailable">Battery optimization not available</string>
+    <string name="toast_copied">Copied to clipboard</string>
+    <string name="toast_open_failed">Could not open URL</string>
     
     <string name="about_title">About</string>
     <string name="about_message">PureLink v1.0\nSafe &amp; Native.\nAhmed Samy.</string>
