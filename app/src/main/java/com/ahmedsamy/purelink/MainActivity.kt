@@ -16,6 +16,13 @@ import com.ahmedsamy.purelink.ui.MainScreen
 import com.ahmedsamy.purelink.ui.theme.PureLinkTheme
 
 import androidx.activity.enableEdgeToEdge
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Constraints
+import com.ahmedsamy.purelink.workers.UpdateRulesWorker
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
 
@@ -24,6 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        
+        // Schedule Background Updates
+        setupPeriodicUpdates()
 
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
@@ -48,6 +58,23 @@ class MainActivity : ComponentActivity() {
         }
 
         handleIncomingIntent(intent)
+    }
+
+    private fun setupPeriodicUpdates() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true)
+            .build()
+
+        val updateRequest = PeriodicWorkRequestBuilder<UpdateRulesWorker>(7, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "UpdateRules",
+            ExistingPeriodicWorkPolicy.KEEP,
+            updateRequest
+        )
     }
 
     override fun onResume() {

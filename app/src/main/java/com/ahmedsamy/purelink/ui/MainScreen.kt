@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -32,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -55,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.purelink.MainViewModel
 import com.ahmedsamy.purelink.R
+import com.ahmedsamy.purelink.UpdateStatus
 import com.ahmedsamy.purelink.ui.components.SettingsSwitch
 import com.ahmedsamy.purelink.ui.components.TerminalCard
 import com.ahmedsamy.purelink.ui.theme.ButtonActive
@@ -97,6 +100,49 @@ fun MainScreen(
         }
     }
 
+    // Handle Update Status Dialogs
+    when (uiState.updateStatus) {
+        UpdateStatus.LOADING -> {
+            // Optional: You could show a specialized dialog or just rely on the Toast/Loading state.
+            // For now, let's just show a Toast to indicate it started if needed, 
+            // but the prompt asked for a Loading Indicator OR simple Toast.
+            // Let's use a non-intrusive approach or a simple indeterminate dialog if preferred.
+            // A simple Toast "Checking..." is easiest as requested.
+             LaunchedEffect(Unit) {
+                 Toast.makeText(context, "Checking for updates...", Toast.LENGTH_SHORT).show()
+             }
+        }
+        UpdateStatus.SUCCESS -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.resetUpdateStatus() },
+                title = { Text(text = "Update Successful", fontFamily = FontFamily.Monospace, color = TerminalGreen) },
+                text = { Text("Filters updated successfully. New rules applied.", color = TextPrimary) },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.resetUpdateStatus() }) {
+                        Text("OK", color = TerminalGreen)
+                    }
+                },
+                containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
+                textContentColor = TextPrimary
+            )
+        }
+        UpdateStatus.ERROR -> {
+            AlertDialog(
+                onDismissRequest = { viewModel.resetUpdateStatus() },
+                title = { Text(text = "Update Failed", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.error) },
+                text = { Text("Failed to connect to GitHub. Check internet.", color = TextPrimary) },
+                confirmButton = {
+                    TextButton(onClick = { viewModel.resetUpdateStatus() }) {
+                        Text("OK", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
+                textContentColor = TextPrimary
+            )
+        }
+        else -> {}
+    }
+
     if (currentScreen == Screen.HISTORY) {
         HistoryScreen(
             viewModel = viewModel,
@@ -117,6 +163,7 @@ fun MainScreen(
                     onBase64Encode = viewModel::encodeBase64,
                     onBase64Decode = viewModel::decodeBase64,
                     onGenerateUuid = viewModel::generateUuid,
+                    onUpdateRules = viewModel::updateRules,
                     onAboutClick = onAboutClick,
                     onHistoryClick = { currentScreen = Screen.HISTORY }
                 )
@@ -186,6 +233,7 @@ private fun PureLinkTopBar(
     onBase64Encode: () -> Unit,
     onBase64Decode: () -> Unit,
     onGenerateUuid: () -> Unit,
+    onUpdateRules: () -> Unit,
     onAboutClick: () -> Unit,
     onHistoryClick: () -> Unit
 ) {
@@ -242,6 +290,13 @@ private fun PureLinkTopBar(
                     )
                 }
                 DropdownMenu(expanded = showMainMenu, onDismissRequest = { showMainMenu = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Update Tracking Filters") },
+                        onClick = {
+                            showMainMenu = false
+                            onUpdateRules()
+                        }
+                    )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_social)) },
                         onClick = {
