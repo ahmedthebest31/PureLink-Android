@@ -33,8 +33,13 @@ data class MainUiState(
         val vibrateEnabled: Boolean = true,
         val toastEnabled: Boolean = true,
         val isResolving: Boolean = false,
-        val toastMessage: String? = null
+        val toastMessage: String? = null,
+        val updateStatus: UpdateStatus = UpdateStatus.IDLE
 )
+
+enum class UpdateStatus {
+    IDLE, LOADING, SUCCESS, ERROR
+}
 
 class MainViewModel(
         private val prefs: SharedPreferences,
@@ -62,7 +67,29 @@ class MainViewModel(
     init {
         loadInitialState()
         loadHistory()
+        // Load dynamic rules if available
+        viewModelScope.launch {
+             UrlCleaner.reloadRules(context)
+        }
         prefs.registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    fun updateRules() {
+        _uiState.update { it.copy(updateStatus = UpdateStatus.LOADING) }
+        viewModelScope.launch {
+            val repo = com.ahmedsamy.purelink.data.RulesRepository(context)
+            val success = repo.fetchAndSaveRules()
+            if (success) {
+                UrlCleaner.reloadRules(context)
+                _uiState.update { it.copy(updateStatus = UpdateStatus.SUCCESS) }
+            } else {
+                _uiState.update { it.copy(updateStatus = UpdateStatus.ERROR) }
+            }
+        }
+    }
+
+    fun resetUpdateStatus() {
+        _uiState.update { it.copy(updateStatus = UpdateStatus.IDLE) }
     }
 
     private fun loadInitialState() {

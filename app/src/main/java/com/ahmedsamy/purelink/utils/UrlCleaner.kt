@@ -13,7 +13,7 @@ object UrlCleaner {
     // Regex to find http/https URLs. \S+ matches non-whitespace characters.
     private val URL_EXTRACTOR_REGEX = Regex("https?://\\S+")
 
-    private val TRACKING_PARAMS = listOf(
+    private var TRACKING_PARAMS = listOf(
         "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
         "fbclid", "si", "ref", "gclid", "gclsrc", "dclid", "msclkid",
         "mc_eid", "_ga", "yclid", "vero_conv", "vero_id", "wickedid",
@@ -21,7 +21,24 @@ object UrlCleaner {
     )
 
     // Pre-compiled regex for parameters to improve performance
-    private val PARAMS_REGEX = Regex("[?&](${TRACKING_PARAMS.joinToString("|") { Regex.escape(it) }})=[^&]*", RegexOption.IGNORE_CASE)
+    @Volatile
+    private var PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
+
+    private fun buildRegex(params: List<String>): Regex {
+        return Regex("[?&](${params.joinToString("|") { Regex.escape(it) }})=[^&]*", RegexOption.IGNORE_CASE)
+    }
+
+    suspend fun reloadRules(context: android.content.Context) {
+        val repo = com.ahmedsamy.purelink.data.RulesRepository(context)
+        val newRules = repo.loadRules()
+        if (!newRules.isNullOrEmpty()) {
+            // Merge or Replace? The prompt implies "using the updated list", usually replacing defaults is the goal of a dynamic update.
+            // However, ensuring we don't lose core ones might be good.
+            // Let's assume the remote list is the authority.
+            TRACKING_PARAMS = newRules
+            PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
+        }
+    }
 
     /**
      * Replaces all URLs in the text using the provided transform function.
