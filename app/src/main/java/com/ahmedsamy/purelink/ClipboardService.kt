@@ -13,9 +13,13 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
 import androidx.core.content.edit
+import com.ahmedsamy.purelink.data.HistoryRepository
+import com.ahmedsamy.purelink.utils.FeedbackUtils
 import com.ahmedsamy.purelink.utils.UrlCleaner
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("AccessibilityPolicy")
 class ClipboardService : AccessibilityService() {
@@ -25,7 +29,8 @@ class ClipboardService : AccessibilityService() {
     }
 
     private lateinit var clipboard: ClipboardManager
-    private lateinit var vibrator: Vibrator
+    private lateinit var historyRepository: HistoryRepository
+    private val scope = CoroutineScope(Dispatchers.Main)
     private val handler = Handler(Looper.getMainLooper())
 
     // Flag to prevent re-entry when we modify the clipboard ourselves
@@ -44,7 +49,7 @@ class ClipboardService : AccessibilityService() {
         super.onServiceConnected()
         Log.d(TAG, "Service connected!")
         clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+        historyRepository = HistoryRepository(this)
         clipboard.addPrimaryClipChangedListener(clipListener)
 
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
@@ -122,6 +127,14 @@ class ClipboardService : AccessibilityService() {
             clipboard.setPrimaryClip(newClip)
             Log.d(TAG, "Clipboard updated with cleaned content")
             
+            scope.launch(Dispatchers.IO) {
+                try {
+                    historyRepository.addUrl(cleaned)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to save history", e)
+                }
+            }
+            
             notifyUser()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update clipboard", e)
@@ -135,16 +148,7 @@ class ClipboardService : AccessibilityService() {
     }
 
     private fun notifyUser() {
-        val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
-        val shouldVibrate = prefs.getBoolean("vibrate", true)
-        val shouldToast = prefs.getBoolean("toast", true)
-
-        if (shouldVibrate) {
-            vibrator.vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
-        }
-
-        if (shouldToast) {
-            Toast.makeText(this, getString(R.string.toast_cleaned), Toast.LENGTH_SHORT).show()
-        }
+        FeedbackUtils.performHapticFeedback(this)
+        FeedbackUtils.showToast(this, getString(R.string.toast_cleaned))
     }
 }

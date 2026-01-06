@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.ahmedsamy.purelink.data.HistoryItem
 import com.ahmedsamy.purelink.data.HistoryRepository
+import com.ahmedsamy.purelink.data.SettingsRepository
 import com.ahmedsamy.purelink.utils.UrlCleaner
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +35,8 @@ data class MainUiState(
         val toastEnabled: Boolean = true,
         val isResolving: Boolean = false,
         val toastMessage: String? = null,
-        val updateStatus: UpdateStatus = UpdateStatus.IDLE
+        val updateStatus: UpdateStatus = UpdateStatus.IDLE,
+        val showOnboardingAlert: Boolean = false
 )
 
 enum class UpdateStatus {
@@ -42,11 +44,12 @@ enum class UpdateStatus {
 }
 
 class MainViewModel(
-        private val prefs: SharedPreferences,
+        private val prefs: SharedPreferences, // Kept for stats/monitoring_active legacy if needed, or move all to repo
+        private val settingsRepository: SettingsRepository,
         private val clipboardManager: ClipboardManager,
         private val resources: Resources,
         private val historyRepository: HistoryRepository,
-        private val context: Context // Needed for opening URLs
+        private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainUiState())
@@ -67,11 +70,21 @@ class MainViewModel(
     init {
         loadInitialState()
         loadHistory()
-        // Load dynamic rules if available
+        checkOnboarding()
         viewModelScope.launch {
              UrlCleaner.reloadRules(context)
         }
         prefs.registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+    
+    private fun checkOnboarding() {
+        val hasSeen = settingsRepository.hasSeenOnboarding()
+        _uiState.update { it.copy(showOnboardingAlert = !hasSeen) }
+    }
+
+    fun markOnboardingSeen() {
+        settingsRepository.setOnboardingSeen()
+        _uiState.update { it.copy(showOnboardingAlert = false) }
     }
 
     fun updateRules() {
@@ -97,9 +110,9 @@ class MainViewModel(
             it.copy(
                     isMonitoringActive = prefs.getBoolean("monitoring_active", true),
                     cleanCount = prefs.getInt("stats_count", 0),
-                    unshortenEnabled = prefs.getBoolean("unshorten", false),
-                    vibrateEnabled = prefs.getBoolean("vibrate", true),
-                    toastEnabled = prefs.getBoolean("toast", true)
+                    unshortenEnabled = settingsRepository.isUnshortenEnabled(),
+                    vibrateEnabled = settingsRepository.isVibrateEnabled(),
+                    toastEnabled = settingsRepository.isToastEnabled()
             )
         }
     }
@@ -141,7 +154,6 @@ class MainViewModel(
 
         viewModelScope.launch {
             try {
-                // Smart processing for both single URLs and mixed text
                 val processed = UrlCleaner.processText(text, _uiState.value.unshortenEnabled)
                 finalizeClean(processed)
             } catch (e: Exception) {
@@ -157,7 +169,6 @@ class MainViewModel(
         copyToClipboard(cleanedText)
         incrementStats()
         
-        // Save to History (safely)
         if (cleanedText.contains("http", ignoreCase = true)) {
              viewModelScope.launch {
                  try {
@@ -179,21 +190,20 @@ class MainViewModel(
     }
 
     fun setUnshortenEnabled(enabled: Boolean) {
-        prefs.edit { putBoolean("unshorten", enabled) }
+        settingsRepository.setUnshortenEnabled(enabled)
         _uiState.update { it.copy(unshortenEnabled = enabled) }
     }
 
     fun setVibrateEnabled(enabled: Boolean) {
-        prefs.edit { putBoolean("vibrate", enabled) }
+        settingsRepository.setVibrateEnabled(enabled)
         _uiState.update { it.copy(vibrateEnabled = enabled) }
     }
 
     fun setToastEnabled(enabled: Boolean) {
-        prefs.edit { putBoolean("toast", enabled) }
+        settingsRepository.setToastEnabled(enabled)
         _uiState.update { it.copy(toastEnabled = enabled) }
     }
 
-    // Menu actions
     fun encodeBase64() {
         val text = _uiState.value.inputText.trim()
         if (text.isNotEmpty()) {
@@ -245,11 +255,29 @@ class MainViewModel(
     }
 
     private fun showToast(message: String) {
-        _uiState.update { it.copy(toastMessage = message) }
+        // We still use this internal method for UI state toast messages (non-intrusive),
+        // but let's check settings too if it's a "Done" message? 
+        // Actually, UI logic uses 'toastMessage' which Compose displays. 
+        // We should check setting here before setting state.
+        if (settingsRepository.isToastEnabled()) {
+             _uiState.update { it.copy(toastMessage = message) }
+        }
     }
 
     fun copyToClipboard(text: String) {
         clipboardManager.setPrimaryClip(ClipData.newPlainText("PureLink", text))
+        
+        // Haptic feedback logic should be here or triggered via Utils in View
+        // Since ViewModel doesn't have View reference easily for haptic, we can use Utils
+        // But Utils needs context. We have context.
+        if (settingsRepository.isVibrateEnabled()) {
+            // Need to use Vibrator service.
+             val v = context.getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
+             if (v.hasVibrator()) {
+                v.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+             }
+        }
+        
         showToast(resources.getString(R.string.toast_copied))
     }
     
@@ -279,7 +307,8 @@ class MainViewModel(
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         val historyRepository = HistoryRepository(context)
-                        return MainViewModel(prefs, clipboardManager, resources, historyRepository, context) as T
+                        val settingsRepository = SettingsRepository(context)
+                        return MainViewModel(prefs, settingsRepository, clipboardManager, resources, historyRepository, context) as T
                     }
                 }
     }
