@@ -33,3 +33,11 @@ google-services.json
 *.jks
 *.keystore
 key.properties
+
+
+
+# my personal files 
+*.ps1 
+*.py
+commit_msg.txt
+AUDIT_AND_MIGRATION_PLAN.md

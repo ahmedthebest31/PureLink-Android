@@ -1,6 +1,0 @@
-fix: resolve build errors by replacing unavailable icons
-
-- Replace unresolved `History` icon with `DateRange` (Core).
-- Replace unresolved `OpenInBrowser` icon with `Share` (Core).
-- Update `ArrowBack` to `AutoMirrored.Filled` variant.
-- Verify `ContentCopy` works as `Filled`.

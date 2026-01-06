@@ -15,11 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.ahmedsamy.purelink.ui.MainScreen
 import com.ahmedsamy.purelink.ui.theme.PureLinkTheme
 
+import androidx.activity.enableEdgeToEdge
+
 class MainActivity : ComponentActivity() {
 
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
