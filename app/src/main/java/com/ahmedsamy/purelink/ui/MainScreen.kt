@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -103,28 +105,29 @@ fun MainScreen(
             onOpenClick = { viewModel.openUrl(it) }
         )
     } else {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)) {
-            
-            PureLinkTopBar(
-                cleanCount = uiState.cleanCount,
-                inputText = uiState.inputText,
-                onWhatsAppClick = onWhatsAppClick,
-                onTelegramClick = onTelegramClick,
-                onBase64Encode = viewModel::encodeBase64,
-                onBase64Decode = viewModel::decodeBase64,
-                onGenerateUuid = viewModel::generateUuid,
-                onAboutClick = onAboutClick,
-                onHistoryClick = { currentScreen = Screen.HISTORY }
-            )
-
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                PureLinkTopBar(
+                    cleanCount = uiState.cleanCount,
+                    inputText = uiState.inputText,
+                    onWhatsAppClick = onWhatsAppClick,
+                    onTelegramClick = onTelegramClick,
+                    onBase64Encode = viewModel::encodeBase64,
+                    onBase64Decode = viewModel::decodeBase64,
+                    onGenerateUuid = viewModel::generateUuid,
+                    onAboutClick = onAboutClick,
+                    onHistoryClick = { currentScreen = Screen.HISTORY }
+                )
+            }
+        ) { innerPadding ->
             Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
                 StatusCard(
                     isActive = uiState.isMonitoringActive,
@@ -149,6 +152,8 @@ fun MainScreen(
                     fontFamily = FontFamily.Monospace,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 ServiceCard(
                     isEnabled = uiState.isServiceEnabled,
