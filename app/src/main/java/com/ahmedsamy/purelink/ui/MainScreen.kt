@@ -143,6 +143,32 @@ fun MainScreen(
         else -> {}
     }
 
+    if (!uiState.isServiceEnabled && uiState.showOnboardingAlert) {
+         AlertDialog(
+            onDismissRequest = { viewModel.markOnboardingSeen() },
+            title = { Text(text = stringResource(R.string.accessibility_title), fontFamily = FontFamily.Monospace, color = TextPrimary) },
+            text = { Text(stringResource(R.string.accessibility_desc), color = TextPrimary) },
+            confirmButton = {
+                Button(
+                    onClick = { 
+                        viewModel.markOnboardingSeen()
+                        onServiceClick() 
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                ) {
+                    Text(stringResource(R.string.ok), color = TextPrimary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.markOnboardingSeen() }) {
+                     Text(stringResource(R.string.cancel), color = TextSecondary)
+                }
+            },
+            containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
+            textContentColor = TextPrimary
+        )
+    }
+
     if (currentScreen == Screen.HISTORY) {
         HistoryScreen(
             viewModel = viewModel,
