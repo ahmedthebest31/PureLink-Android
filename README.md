@@ -1,6 +1,6 @@
 # >_ PureLink Android 🛡️
 
-**The Swiss Army Knife for Privacy & Developers.**
+**The Ultimate URL Sanitizer (Swiss Army Knife for Privacy).**
 
 PureLink is a powerful, lightweight, and accessibility-first Android utility designed to strip tracking parameters from URLs, expand shortened links, and provide essential tools for developers. Wrapped in a high-contrast **Terminal/Hacker style** interface.
 
@@ -18,30 +18,45 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 * **Quick Settings Tile:** Toggle the monitoring service instantly from your notification shade (Quick Settings) without opening the app.
 * **Haptic Feedback:** Vibrates to confirm when a link has been cleaned or processed.
 
+### 📜 History & Smart Rules
+* **Local History:** Added a secure, local history log (last 10 links) with instant "Copy" and "Open" actions.
+* **Dynamic Rules Engine:** The app now silently fetches updated tracking filters from GitHub every week via `WorkManager`.
+
+### ⚡ System Integration
+* **Invisible Share Target:** Sharing a link to PureLink now triggers a transparent activity that cleans, copies, and closes instantly without disrupting your flow.
+* **Process Text:** Select any text system-wide -> Click the 3 dots -> Choose "PureLink Clean".
+
+### 🎨 UI & Accessibility
+* **Jetpack Compose:** The entire UI has been rewritten from XML to **Jetpack Compose**, resulting in a smoother, more responsive, and lighter interface.
+* **Accessibility First:** Enhanced TalkBack support with labeled touch targets and semantic descriptions for all interactive elements.
+* **Terminal Esthetic:** Polished "Green-on-Black" theme with system bar transparency (Edge-to-Edge).
+
+---
+
+## 🛠️ Tech Stack
+
+*   **Kotlin** 100%
+*   **Jetpack Compose** (UI)
+*   **Coroutines** (Concurrency)
+*   **WorkManager** (Background Tasks)
+
 ### 🛠️ Developer & Social Tools
 * **WhatsApp Direct:** Copy any phone number -> Open chat immediately without saving the contact.
 * **Telegram Direct:** Open usernames directly.
 * **Dev Utilities:** Built-in Base64 Encoder/Decoder and UUID Generator.
 
-### ⚡ System Integration
-* **Share Target:** Share links directly from other apps (YouTube, Chrome, Twitter) to PureLink for instant cleaning.
-* **Process Text:** Select any text system-wide -> Click the 3 dots -> Choose "PureLink Clean".
-
-### ♿ Accessibility First
-* Designed by a blind developer for maximum efficiency with Screen Readers (TalkBack).
-* High-contrast UI (Green on Black) for low-vision users and battery saving on AMOLED screens.
 
 ---
 
-## 📥 Download Android App
+## 📥 Download
 
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.ahmedsamy.purelink">
   <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="60">
 </a>
 
-also you can Get the latest APK from the [Releases page](https://github.com/ahmedthebest31/PureLink-Android/releases/tag/v1.0.1)
+Or get the latest APK from the [Releases page](https://github.com/ahmedthebest31/PureLink-Android/releases).
 
-> **Note:** This app is fully native, lightweight (~1MB), and requires no unnecessary permissions.
+> **Note:** This app is fully native, lightweight (~2MB), and requires no unnecessary permissions.
 
 ---
 
@@ -59,7 +74,7 @@ Check out **PureLink Desktop**, a high-performance system tool written in **Go (
 ---
 
 ### 🤝 Contributing
-Contributions are welcome! Please note that this version utilizes `syscall` for Windows native features.
+Contributions to this project are welcome! If you find a bug, have an idea for an improvement, or want to contribute in any other way, please feel free to open an issue or submit a pull request.
 
 ### 📄 License
 MIT License

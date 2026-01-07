@@ -1,1 +1,1 @@
-Remove tracking from URLs, expand short links & protect privacy. Accessibility first.
+Clean URLs, remove tracking, unshorten links & view history.
