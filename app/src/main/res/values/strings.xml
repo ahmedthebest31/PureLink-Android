@@ -74,6 +74,6 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="toast_open_failed">Could not open URL</string>
     
     <string name="about_title">About</string>
-    <string name="about_message">PureLink v1.0\nSafe &amp; Native.\nAhmed Samy.</string>
+    <string name="about_message">PureLink v2.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nA privacy-focused, open-source URL sanitizer designed for the blind community. Built with Jetpack Compose.</string>
     <string name="btn_ok">OK</string>
 </resources>
