@@ -14,7 +14,7 @@ android {
     dependenciesInfo {
         // Privacy: Disable dependency metadata for IzzyOnDroid compliance
         includeInApk = false
-        includeInBundle = false
+        includeInBundle = true
     }
 
     defaultConfig {
