@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">بيور لينك</string>
+    <string name="service_desc">مراقب بيور لينك لتنظيف الحافظة</string>
+
+    <string name="accessibility_title">تفعيل المراقب</string>
+    <string name="accessibility_desc">لتنظيف الروابط تلقائياً في الخلفية (على سبيل المثال، من واتساب)، يحتاج بيور لينك إلى تفعيل خدمة إمكانية الوصول.</string>
+    <string name="accessibility_service_description">تقوم هذه الخدمة بمراقبة محتوى الحافظة لاكتشاف الروابط وتقصيرها وإزالة بارامترات التتبع والإعلانات والإضافات الخبيثة تلقائياً دون الحاجة لفتح التطبيق. تعمل هذه الميزة بصمت في الخلفية ومتوافقة مع جميع التطبيقات.\n\nملاحظة الخصوصية: الوصول للإنترنت مطلوب فقط لتحويل الروابط المختصرة إلى وجهتها الأصلية. لا يقوم بيور لينك بتسجيل أو تخزين أو مشاركة بياناتك الشخصية أو محتوى الحافظة مع أي جهات خارجية.\n\nملاحظة: تفعيل هذه الخدمة اختياري. إذا كنت تفضل عدم استخدامها، يمكنك لصق الروابط يدوياً في تطبيق بيور لينك لتنظيفها.</string>
+
+    <string name="ok">تفعيل الآن</string>
+    <string name="cancel">لاحقاً</string>
+    <string name="clean_link_action">تنظيف باستخدام بيور لينك</string>
+
+    <!-- UI Main Screen -->
+    <string name="app_title">بيور لينك</string>
+    <string name="cleaned_count_desc">تم تنظيف: %1$d</string>
+    <string name="menu_desc">القائمة</string>
+
+    <string name="status_active">الحالة: نشط 🛡️</string>
+    <string name="status_paused">الحالة: متوقف مؤقتاً ⏸️</string>
+    <string name="status_desc_active">الحالة: نشط</string>
+    <string name="status_desc_paused">الحالة: متوقف مؤقتاً</string>
+    <string name="monitoring_label">مراقبة الحافظة</string>
+    <string name="btn_pause">إيقاف مؤقت</string>
+    <string name="btn_resume">استئناف</string>
+
+    <string name="input_hint">الصق المدخلات هنا...</string>
+    <string name="btn_paste">لصق</string>
+    <string name="btn_execute">تنظيف</string>
+    <string name="btn_resolving">جاري المعالجة...</string>
+    <string name="input_field_desc">حقل إدخال الرابط</string>
+
+    <string name="section_system_power">طاقة النظام</string>
+    <string name="service_card_title">خدمة إمكانية الوصول</string>
+    <string name="service_card_subtitle">تفعيل البطارية والوصول</string>
+    
+    <string name="setting_unshorten">فك الروابط المختصرة</string>
+    <string name="setting_haptic">ردود الفعل اللمسية</string>
+    <string name="setting_verbose">وضع التفاصيل (الإشعارات)</string>
+
+    <!-- Menu Items -->
+    <string name="menu_social">أدوات التواصل</string>
+    <string name="menu_dev">أدوات المطورين</string>
+    <string name="menu_about">حول التطبيق</string>
+    <string name="menu_whatsapp">فتح في واتساب</string>
+    <string name="menu_telegram">فتح في تلجرام</string>
+    <string name="menu_base64_encode">تشفير Base64</string>
+    <string name="menu_base64_decode">فك تشفير Base64</string>
+    <string name="menu_uuid">توليد UUID</string>
+    <string name="menu_language">اللغة</string>
+    <string name="menu_update">تحديث فلاتر التتبع</string>
+    <string name="menu_share">شارك التطبيق</string>
+    <string name="menu_rate">قيم التطبيق</string>
+    <string name="menu_donate">دعم المطور</string>
+    <string name="menu_github">انتقل إلى GitHub</string>
+
+    <!-- Support Dialog -->
+    <string name="donate_title">دعم بيور لينك</string>
+    <string name="donate_message">بيور لينك مشروع مجاني ومفتوح المصدر. إذا كنت تجد التطبيق مفيداً، يمكنك دعم المطور من خلال الطرق التالية:</string>
+    <string name="btn_paypal">PayPal</string>
+    <string name="btn_instapay">InstaPay (مصر)</string>
+
+    <string name="clipboard_label">تم التنظيف بواسطة بيور لينك</string>
+    <string name="checking_updates">جاري فحص التحديثات...</string>
+    <string name="tile_active">بيور لينك: نشط</string>
+    <string name="tile_paused">بيور لينك: متوقف</string>
+    <string name="tile_disabled">الخدمة معطلة</string>
+    <string name="toast_monitor_on">المراقب يعمل 🟢</string>
+    <string name="toast_monitor_paused">المراقب متوقف ⏸️</string>
+    <string name="update_success_title">تم التحديث بنجاح</string>
+    <string name="update_success_msg">تم تحديث الفلاتر بنجاح. تم تطبيق القواعد الجديدة.</string>
+    <string name="update_failed_title">فشل التحديث</string>
+    <string name="update_failed_msg">فشل الاتصال بـ GitHub. تحقق من الإنترنت.</string>
+
+    <!-- History Screen -->
+    <string name="history_title">السجل الأخير</string>
+    <string name="btn_back">رجوع</string>
+    <string name="history_empty">لا يوجد سجل حديث</string>
+    <string name="desc_copy_link">نسخ الرابط: %1$s</string>
+    <string name="desc_open_link">فتح الرابط: %1$s</string>
+    <string name="desc_history_icon">عرض السجل</string>
+
+    <!-- Toasts & Messages -->
+    <string name="toast_done">تم! 🚀</string>
+    <string name="toast_cleaned">تم التنظيف! 🧹</string>
+    <string name="toast_no_links">لم يتم العثور على روابط.</string>
+    <string name="toast_nothing_to_clean">لا يوجد شيء لتنظيفه.</string>
+    <string name="toast_cleaned_plural">تم تنظيف %1$d رابط.</string>
+    <string name="toast_unshortened_plural">تم تنظيف %1$d وفك %2$d رابط.</string>
+    <string name="toast_open_browser_failed">لم يتم العثور على تطبيق لفتح هذا الرابط.</string>
+    <string name="toast_paste_number">الصق الرقم!</string>
+    <string name="toast_paste_username">الصق اسم المستخدم!</string>
+    <string name="toast_whatsapp_unavailable">واتساب غير متوفر</string>
+    <string name="toast_telegram_unavailable">تلجرام غير متوفر</string>
+    <string name="toast_base64_invalid">Base64 غير صالح</string>
+    <string name="service_enable_prompt">تفعيل خدمة \'PureLink\'</string>
+    <string name="service_already_running">الخدمة تعمل بالفعل ✅</string>
+    <string name="battery_opt_unavailable">تحسين البطارية غير متوفر</string>
+    <string name="toast_copied">تم النسخ إلى الحافظة</string>
+    <string name="toast_open_failed">فشل فتح الرابط</string>
+    <string name="lang_system">لغة النظام</string>
+    <string name="lang_english">English</string>
+    <string name="lang_arabic">العربية</string>
+    
+    <string name="about_title">حول التطبيق</string>
+    <string name="about_message">PureLink v2.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nأداة خصوصية مفتوحة المصدر لتنظيف روابط التتبع. مصممة للمكفوفين ومبنية باستخدام Jetpack Compose.</string>
+    <string name="btn_ok">حسناً</string>
+    <string name="share_text">جرب "بيور لينك"، الأداة المثالية للخصوصية لتنظيف روابط التتبع! https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink</string>
+</resources>

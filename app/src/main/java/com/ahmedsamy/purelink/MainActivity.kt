@@ -8,12 +8,15 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import com.ahmedsamy.purelink.ui.MainScreen
 import com.ahmedsamy.purelink.ui.theme.PureLinkTheme
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 
 import androidx.activity.enableEdgeToEdge
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -24,22 +27,23 @@ import androidx.work.Constraints
 import com.ahmedsamy.purelink.workers.UpdateRulesWorker
 import java.util.concurrent.TimeUnit
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
+
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         
         // Schedule Background Updates
         setupPeriodicUpdates()
 
-        val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
         val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
 
         viewModel =
-            ViewModelProvider(this, MainViewModel.provideFactory(applicationContext, prefs, clipboardManager, resources))[
+            ViewModelProvider(this, MainViewModel.provideFactory(applicationContext, prefs, clipboardManager))[
                 MainViewModel::class.java]
 
         setContent {
@@ -51,8 +55,7 @@ class MainActivity : ComponentActivity() {
                     viewModel = viewModel,
                     onServiceClick = ::handleServiceClick,
                     onWhatsAppClick = ::openWhatsApp,
-                    onTelegramClick = ::openTelegram,
-                    onAboutClick = ::showAboutDialog
+                    onTelegramClick = ::openTelegram
                 )
             }
         }
@@ -155,11 +158,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun showAboutDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.about_title))
-            .setMessage(getString(R.string.about_message))
-            .setPositiveButton(getString(R.string.btn_ok), null)
-            .show()
-    }
 }

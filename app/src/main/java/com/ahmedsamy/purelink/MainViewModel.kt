@@ -8,7 +8,9 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.Uri
 import android.util.Base64
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.ahmedsamy.purelink.utils.FeedbackUtils
 
 data class MainUiState(
         val isMonitoringActive: Boolean = true,
@@ -34,20 +37,24 @@ data class MainUiState(
         val vibrateEnabled: Boolean = true,
         val toastEnabled: Boolean = true,
         val isResolving: Boolean = false,
-        val toastMessage: String? = null,
+        val toastMessage: ToastMessage? = null,
         val updateStatus: UpdateStatus = UpdateStatus.IDLE,
-        val showOnboardingAlert: Boolean = false
+        val showOnboardingAlert: Boolean = false,
+        val selectedLanguage: String = ""
 )
+
+sealed class ToastMessage {
+    data class Resource(val resId: Int, val args: List<Any> = emptyList()) : ToastMessage()
+    data class Literal(val message: String) : ToastMessage()
+}
 
 enum class UpdateStatus {
     IDLE, LOADING, SUCCESS, ERROR
 }
-
 class MainViewModel(
-        private val prefs: SharedPreferences, // Kept for stats/monitoring_active legacy if needed, or move all to repo
+        private val prefs: SharedPreferences,
         private val settingsRepository: SettingsRepository,
         private val clipboardManager: ClipboardManager,
-        private val resources: Resources,
         private val historyRepository: HistoryRepository,
         private val context: Context
 ) : ViewModel() {
@@ -69,12 +76,21 @@ class MainViewModel(
 
     init {
         loadInitialState()
+        applyInitialLocale()
         loadHistory()
         checkOnboarding()
         viewModelScope.launch {
              UrlCleaner.reloadRules(context)
         }
         prefs.registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    private fun applyInitialLocale() {
+        val lang = settingsRepository.getLanguage()
+        if (lang.isNotEmpty()) {
+            val appLocale = LocaleListCompat.forLanguageTags(lang)
+            AppCompatDelegate.setApplicationLocales(appLocale)
+        }
     }
     
     private fun checkOnboarding() {
@@ -112,9 +128,22 @@ class MainViewModel(
                     cleanCount = prefs.getInt("stats_count", 0),
                     unshortenEnabled = settingsRepository.isUnshortenEnabled(),
                     vibrateEnabled = settingsRepository.isVibrateEnabled(),
-                    toastEnabled = settingsRepository.isToastEnabled()
+                    toastEnabled = settingsRepository.isToastEnabled(),
+                    selectedLanguage = settingsRepository.getLanguage()
             )
         }
+    }
+
+    fun setLanguage(lang: String) {
+        settingsRepository.setLanguage(lang)
+        _uiState.update { it.copy(selectedLanguage = lang) }
+        
+        val appLocale: LocaleListCompat = if (lang.isEmpty()) {
+            LocaleListCompat.getEmptyLocaleList()
+        } else {
+            LocaleListCompat.forLanguageTags(lang)
+        }
+        AppCompatDelegate.setApplicationLocales(appLocale)
     }
 
     private fun loadHistory() {
@@ -149,38 +178,56 @@ class MainViewModel(
         if (text.isEmpty()) return
 
         _uiState.update {
-            it.copy(isResolving = true, toastMessage = resources.getString(R.string.btn_resolving))
+            it.copy(isResolving = true, toastMessage = ToastMessage.Resource(R.string.btn_resolving))
         }
 
         viewModelScope.launch {
             try {
-                val processed = UrlCleaner.processText(text, _uiState.value.unshortenEnabled)
-                finalizeClean(processed)
+                val result = UrlCleaner.processText(text, _uiState.value.unshortenEnabled)
+                finalizeClean(result, text)
             } catch (e: Exception) {
                 e.printStackTrace()
                 _uiState.update { it.copy(isResolving = false) }
-                showToast("Error: ${e.message}")
+                showToast(ToastMessage.Literal("Error: ${e.message}"))
             }
         }
     }
 
-    private fun finalizeClean(cleanedText: String) {
+    private fun finalizeClean(result: UrlCleaner.ProcessingResult, originalText: String) {
+        val cleanedText = result.resultText
         _uiState.update { it.copy(inputText = cleanedText, isResolving = false) }
-        copyToClipboard(cleanedText)
-        incrementStats()
         
-        if (cleanedText.contains("http", ignoreCase = true)) {
-             viewModelScope.launch {
-                 try {
-                     historyRepository.addUrl(cleanedText)
-                     loadHistory()
-                 } catch (e: Exception) {
-                     e.printStackTrace()
-                 }
-             }
+        if (cleanedText != originalText) {
+            copyToClipboard(cleanedText)
+            
+            if (result.cleanCount > 0 || result.unshortenCount > 0) {
+                incrementStats()
+                viewModelScope.launch {
+                    try {
+                        historyRepository.addUrl(cleanedText)
+                        loadHistory()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                
+                if (result.unshortenCount > 0) {
+                    showToast(ToastMessage.Resource(R.string.toast_unshortened_plural, listOf(result.cleanCount, result.unshortenCount)))
+                } else {
+                    showToast(ToastMessage.Resource(R.string.toast_cleaned_plural, listOf(result.cleanCount)))
+                }
+            } else {
+                 // Technically shouldn't happen if cleanedText != originalText but for safety
+                showToast(ToastMessage.Resource(R.string.toast_cleaned))
+            }
+        } else {
+            // Text is the same. Was there a URL at all?
+            if (originalText.contains("http", ignoreCase = true)) {
+                showToast(ToastMessage.Resource(R.string.toast_nothing_to_clean))
+            } else {
+                showToast(ToastMessage.Resource(R.string.toast_no_links))
+            }
         }
-        
-        showToast(resources.getString(R.string.toast_done))
     }
 
     private fun incrementStats() {
@@ -221,7 +268,7 @@ class MainViewModel(
                 _uiState.update { it.copy(inputText = decoded) }
                 copyToClipboard(decoded)
             } catch (_: Exception) {
-                showToast(resources.getString(R.string.toast_base64_invalid))
+                showToast(ToastMessage.Resource(R.string.toast_base64_invalid))
             }
         }
     }
@@ -234,19 +281,10 @@ class MainViewModel(
 
     fun handleIncomingText(text: String?) {
         if (!text.isNullOrEmpty()) {
-            val cleaned = UrlCleaner.cleanMixedText(text)
-            _uiState.update { it.copy(inputText = cleaned) }
-            copyToClipboard(cleaned)
-            incrementStats()
-            
-             if (cleaned.contains("http", ignoreCase = true)) {
-                 viewModelScope.launch {
-                     historyRepository.addUrl(cleaned)
-                     loadHistory()
-                 }
-             }
-             
-            showToast(resources.getString(R.string.toast_done))
+            viewModelScope.launch {
+                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled())
+                finalizeClean(result, text)
+            }
         }
     }
 
@@ -254,31 +292,14 @@ class MainViewModel(
         _uiState.update { it.copy(toastMessage = null) }
     }
 
-    private fun showToast(message: String) {
-        // We still use this internal method for UI state toast messages (non-intrusive),
-        // but let's check settings too if it's a "Done" message? 
-        // Actually, UI logic uses 'toastMessage' which Compose displays. 
-        // We should check setting here before setting state.
-        if (settingsRepository.isToastEnabled()) {
-             _uiState.update { it.copy(toastMessage = message) }
-        }
+    private fun showToast(message: ToastMessage) {
+        _uiState.update { it.copy(toastMessage = message) }
     }
 
     fun copyToClipboard(text: String) {
-        clipboardManager.setPrimaryClip(ClipData.newPlainText("PureLink", text))
-        
-        // Haptic feedback logic should be here or triggered via Utils in View
-        // Since ViewModel doesn't have View reference easily for haptic, we can use Utils
-        // But Utils needs context. We have context.
-        if (settingsRepository.isVibrateEnabled()) {
-            // Need to use Vibrator service.
-             val v = context.getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
-             if (v.hasVibrator()) {
-                v.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
-             }
-        }
-        
-        showToast(resources.getString(R.string.toast_copied))
+        clipboardManager.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.clipboard_label), text))
+        FeedbackUtils.performHapticFeedback(context)
+        showToast(ToastMessage.Resource(R.string.toast_copied))
     }
     
     fun openUrl(url: String) {
@@ -286,9 +307,48 @@ class MainViewModel(
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            showToast(ToastMessage.Resource(R.string.toast_open_browser_failed))
         } catch (e: Exception) {
-             showToast(resources.getString(R.string.toast_open_failed))
+             showToast(ToastMessage.Resource(R.string.toast_open_failed))
         }
+    }
+
+    fun shareApp() {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text))
+        }
+        val chooser = Intent.createChooser(intent, null)
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
+    }
+
+    fun rateApp() {
+        val packageName = context.packageName
+        val uri = Uri.parse("market://details?id=$packageName")
+        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            context.startActivity(goToMarket)
+        } catch (e: Exception) {
+            val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+            val goToWeb = Intent(Intent.ACTION_VIEW, webUri)
+            goToWeb.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(goToWeb)
+        }
+    }
+
+    fun openRepo() {
+        openUrl("https://github.com/ahmedsamy/PureLink-Android")
+    }
+
+    fun openPayPal() {
+        openUrl("https://www.paypal.com/paypalme/ahmedthebest31")
+    }
+
+    fun openInstaPay() {
+        openUrl("https://ipn.eg/S/ahmedthebest/instapay/63TO4s")
     }
 
     override fun onCleared() {
@@ -300,15 +360,14 @@ class MainViewModel(
         fun provideFactory(
                 context: Context,
                 prefs: SharedPreferences,
-                clipboardManager: ClipboardManager,
-                resources: Resources
+                clipboardManager: ClipboardManager
         ): ViewModelProvider.Factory =
                 object : ViewModelProvider.Factory {
                     @Suppress("UNCHECKED_CAST")
                     override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         val historyRepository = HistoryRepository(context)
                         val settingsRepository = SettingsRepository(context)
-                        return MainViewModel(prefs, settingsRepository, clipboardManager, resources, historyRepository, context) as T
+                        return MainViewModel(prefs, settingsRepository, clipboardManager, historyRepository, context) as T
                     }
                 }
     }
