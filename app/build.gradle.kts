@@ -10,7 +10,7 @@ plugins {
 android {
     namespace = "com.ahmedsamy.purelink"
     compileSdk = 36
-
+    
     dependenciesInfo {
         // Privacy: Disable dependency metadata for IzzyOnDroid compliance
         includeInApk = false
@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-                applicationId = "com.ahmedsamy.purelink"
+        applicationId = "com.ahmedsamy.purelink"
         
         minSdk = 26
         targetSdk = 36
@@ -108,6 +108,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.activity:activity-compose:1.12.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     
     debugImplementation("androidx.compose.ui:ui-tooling")

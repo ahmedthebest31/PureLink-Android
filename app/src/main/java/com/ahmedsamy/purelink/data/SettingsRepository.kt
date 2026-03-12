@@ -37,4 +37,12 @@ class SettingsRepository(context: Context) {
     fun setUnshortenEnabled(enabled: Boolean) {
         prefs.edit { putBoolean("unshorten", enabled) }
     }
+
+    fun getLanguage(): String {
+        return prefs.getString("selected_language", "") ?: ""
+    }
+
+    fun setLanguage(lang: String) {
+        prefs.edit { putString("selected_language", lang) }
+    }
 }

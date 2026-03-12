@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
@@ -56,8 +57,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahmedsamy.purelink.MainViewModel
+import com.ahmedsamy.purelink.ToastMessage
 import com.ahmedsamy.purelink.R
 import com.ahmedsamy.purelink.UpdateStatus
+import com.ahmedsamy.purelink.utils.FeedbackUtils
 import com.ahmedsamy.purelink.ui.components.SettingsSwitch
 import com.ahmedsamy.purelink.ui.components.TerminalCard
 import com.ahmedsamy.purelink.ui.theme.ButtonActive
@@ -84,8 +87,7 @@ fun MainScreen(
     viewModel: MainViewModel,
     onServiceClick: () -> Unit,
     onWhatsAppClick: (String) -> Unit,
-    onTelegramClick: (String) -> Unit,
-    onAboutClick: () -> Unit
+    onTelegramClick: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -94,7 +96,23 @@ fun MainScreen(
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
 
     LaunchedEffect(uiState.toastMessage) {
-        uiState.toastMessage?.let { message ->
+        uiState.toastMessage?.let { toast ->
+            val message = when (toast) {
+                is ToastMessage.Resource -> {
+                    if (toast.args.isEmpty()) {
+                        context.getString(toast.resId)
+                    } else {
+                        // Handle plurals if necessary (e.g. for cleaning count)
+                        if (toast.resId == R.string.toast_cleaned_plural || toast.resId == R.string.toast_unshortened_plural) {
+                            val count = toast.args[0] as Int
+                            context.resources.getQuantityString(toast.resId, count, *toast.args.toTypedArray())
+                        } else {
+                            context.getString(toast.resId, *toast.args.toTypedArray())
+                        }
+                    }
+                }
+                is ToastMessage.Literal -> toast.message
+            }
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearToast()
         }
@@ -103,23 +121,18 @@ fun MainScreen(
     // Handle Update Status Dialogs
     when (uiState.updateStatus) {
         UpdateStatus.LOADING -> {
-            // Optional: You could show a specialized dialog or just rely on the Toast/Loading state.
-            // For now, let's just show a Toast to indicate it started if needed, 
-            // but the prompt asked for a Loading Indicator OR simple Toast.
-            // Let's use a non-intrusive approach or a simple indeterminate dialog if preferred.
-            // A simple Toast "Checking..." is easiest as requested.
              LaunchedEffect(Unit) {
-                 Toast.makeText(context, "Checking for updates...", Toast.LENGTH_SHORT).show()
+                 Toast.makeText(context, context.getString(R.string.checking_updates), Toast.LENGTH_SHORT).show()
              }
         }
         UpdateStatus.SUCCESS -> {
             AlertDialog(
                 onDismissRequest = { viewModel.resetUpdateStatus() },
-                title = { Text(text = "Update Successful", fontFamily = FontFamily.Monospace, color = TerminalGreen) },
-                text = { Text("Filters updated successfully. New rules applied.", color = TextPrimary) },
+                title = { Text(text = stringResource(R.string.update_success_title), fontFamily = FontFamily.Monospace, color = TerminalGreen) },
+                text = { Text(stringResource(R.string.update_success_msg), color = TextPrimary) },
                 confirmButton = {
                     TextButton(onClick = { viewModel.resetUpdateStatus() }) {
-                        Text("OK", color = TerminalGreen)
+                        Text(stringResource(R.string.btn_ok), color = TerminalGreen)
                     }
                 },
                 containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
@@ -129,11 +142,11 @@ fun MainScreen(
         UpdateStatus.ERROR -> {
             AlertDialog(
                 onDismissRequest = { viewModel.resetUpdateStatus() },
-                title = { Text(text = "Update Failed", fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.error) },
-                text = { Text("Failed to connect to GitHub. Check internet.", color = TextPrimary) },
+                title = { Text(text = stringResource(R.string.update_failed_title), fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.error) },
+                text = { Text(stringResource(R.string.update_failed_msg), color = TextPrimary) },
                 confirmButton = {
                     TextButton(onClick = { viewModel.resetUpdateStatus() }) {
-                        Text("OK", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.btn_ok), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
@@ -151,6 +164,7 @@ fun MainScreen(
             confirmButton = {
                 Button(
                     onClick = { 
+                        FeedbackUtils.performHapticFeedback(context)
                         viewModel.markOnboardingSeen()
                         onServiceClick() 
                     },
@@ -160,7 +174,10 @@ fun MainScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.markOnboardingSeen() }) {
+                TextButton(onClick = { 
+                    FeedbackUtils.performHapticFeedback(context)
+                    viewModel.markOnboardingSeen() 
+                }) {
                      Text(stringResource(R.string.cancel), color = TextSecondary)
                 }
             },
@@ -172,9 +189,15 @@ fun MainScreen(
     if (currentScreen == Screen.HISTORY) {
         HistoryScreen(
             viewModel = viewModel,
-            onBackClick = { currentScreen = Screen.HOME },
+            onBackClick = { 
+                FeedbackUtils.performHapticFeedback(context)
+                currentScreen = Screen.HOME 
+            },
             onCopyClick = { viewModel.copyToClipboard(it) },
-            onOpenClick = { viewModel.openUrl(it) }
+            onOpenClick = { 
+                FeedbackUtils.performHapticFeedback(context)
+                viewModel.openUrl(it) 
+            }
         )
     } else {
         Scaffold(
@@ -184,14 +207,20 @@ fun MainScreen(
                 PureLinkTopBar(
                     cleanCount = uiState.cleanCount,
                     inputText = uiState.inputText,
+                    selectedLanguage = uiState.selectedLanguage,
                     onWhatsAppClick = onWhatsAppClick,
                     onTelegramClick = onTelegramClick,
                     onBase64Encode = viewModel::encodeBase64,
                     onBase64Decode = viewModel::decodeBase64,
                     onGenerateUuid = viewModel::generateUuid,
                     onUpdateRules = viewModel::updateRules,
-                    onAboutClick = onAboutClick,
-                    onHistoryClick = { currentScreen = Screen.HISTORY }
+                    onHistoryClick = { currentScreen = Screen.HISTORY },
+                    onShareApp = viewModel::shareApp,
+                    onRateApp = viewModel::rateApp,
+                    onSetLanguage = viewModel::setLanguage,
+                    onGitHubClick = viewModel::openRepo,
+                    onDonatePayPal = viewModel::openPayPal,
+                    onDonateInstaPay = viewModel::openInstaPay
                 )
             }
         ) { innerPadding ->
@@ -204,7 +233,10 @@ fun MainScreen(
             ) {
                 StatusCard(
                     isActive = uiState.isMonitoringActive,
-                    onPauseResumeClick = viewModel::toggleMonitoring
+                    onPauseResumeClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.toggleMonitoring()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -213,8 +245,14 @@ fun MainScreen(
                     inputText = uiState.inputText,
                     isResolving = uiState.isResolving,
                     onInputChange = viewModel::updateInputText,
-                    onPasteClick = viewModel::pasteFromClipboard,
-                    onExecuteClick = viewModel::executeClean
+                    onPasteClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.pasteFromClipboard()
+                    },
+                    onExecuteClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.executeClean()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -230,8 +268,14 @@ fun MainScreen(
 
                 ServiceCard(
                     isEnabled = uiState.isServiceEnabled,
-                    onCardClick = onServiceClick,
-                    onSwitchClick = onServiceClick
+                    onCardClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        onServiceClick()
+                    },
+                    onSwitchClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        onServiceClick()
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -240,9 +284,18 @@ fun MainScreen(
                     unshortenEnabled = uiState.unshortenEnabled,
                     vibrateEnabled = uiState.vibrateEnabled,
                     toastEnabled = uiState.toastEnabled,
-                    onUnshortenChange = viewModel::setUnshortenEnabled,
-                    onVibrateChange = viewModel::setVibrateEnabled,
-                    onToastChange = viewModel::setToastEnabled
+                    onUnshortenChange = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.setUnshortenEnabled(it)
+                    },
+                    onVibrateChange = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.setVibrateEnabled(it)
+                    },
+                    onToastChange = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.setToastEnabled(it)
+                    }
                 )
             }
         }
@@ -254,18 +307,27 @@ fun MainScreen(
 private fun PureLinkTopBar(
     cleanCount: Int,
     inputText: String,
+    selectedLanguage: String,
     onWhatsAppClick: (String) -> Unit,
     onTelegramClick: (String) -> Unit,
     onBase64Encode: () -> Unit,
     onBase64Decode: () -> Unit,
     onGenerateUuid: () -> Unit,
     onUpdateRules: () -> Unit,
-    onAboutClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    onShareApp: () -> Unit,
+    onRateApp: () -> Unit,
+    onSetLanguage: (String) -> Unit,
+    onGitHubClick: () -> Unit,
+    onDonatePayPal: () -> Unit,
+    onDonateInstaPay: () -> Unit
 ) {
     var showMainMenu by remember { mutableStateOf(false) }
     var showSocialMenu by remember { mutableStateOf(false) }
     var showDevMenu by remember { mutableStateOf(false) }
+    var showLangMenu by remember { mutableStateOf(false) }
+    var showDonateDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     
     val cleanedDesc = stringResource(R.string.cleaned_count_desc, cleanCount)
 
@@ -299,7 +361,10 @@ private fun PureLinkTopBar(
         },
         actions = {
              // History Icon
-            IconButton(onClick = onHistoryClick) {
+            IconButton(onClick = {
+                FeedbackUtils.performHapticFeedback(context)
+                onHistoryClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = stringResource(R.string.desc_history_icon),
@@ -308,7 +373,10 @@ private fun PureLinkTopBar(
             }
 
             Box {
-                IconButton(onClick = { showMainMenu = true }) {
+                IconButton(onClick = { 
+                    FeedbackUtils.performHapticFeedback(context)
+                    showMainMenu = true 
+                }) {
                     Icon(
                         Icons.Default.MoreVert,
                         contentDescription = stringResource(R.string.menu_desc),
@@ -317,15 +385,25 @@ private fun PureLinkTopBar(
                 }
                 DropdownMenu(expanded = showMainMenu, onDismissRequest = { showMainMenu = false }) {
                     DropdownMenuItem(
-                        text = { Text("Update Tracking Filters") },
+                        text = { Text(stringResource(R.string.menu_update)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showMainMenu = false
                             onUpdateRules()
                         }
                     )
                     DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_language)) },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showMainMenu = false
+                            showLangMenu = true
+                        }
+                    )
+                    DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_social)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showMainMenu = false
                             showSocialMenu = true
                         }
@@ -333,15 +411,99 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_dev)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showMainMenu = false
                             showDevMenu = true
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.menu_about)) },
+                        text = { Text(stringResource(R.string.menu_share)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showMainMenu = false
-                            onAboutClick()
+                            onShareApp()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_rate)) },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showMainMenu = false
+                            onRateApp()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_github)) },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showMainMenu = false
+                            onGitHubClick()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.menu_donate)) },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showMainMenu = false
+                            showDonateDialog = true
+                        }
+                    )
+                }
+
+                if (showDonateDialog) {
+                    DonateDialog(
+                        onDismiss = { showDonateDialog = false },
+                        onPayPalClick = { onDonatePayPal() },
+                        onInstaPayClick = { onDonateInstaPay() }
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = showLangMenu,
+                    onDismissRequest = { showLangMenu = false }) {
+                    DropdownMenuItem(
+                        text = { 
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.lang_system), modifier = Modifier.weight(1f))
+                                if (selectedLanguage == "") {
+                                    Icon(Icons.Default.Check, contentDescription = stringResource(R.string.ok), tint = TerminalGreen)
+                                }
+                            }
+                        },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showLangMenu = false
+                            onSetLanguage("")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { 
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.lang_english), modifier = Modifier.weight(1f))
+                                if (selectedLanguage == "en") {
+                                    Icon(Icons.Default.Check, contentDescription = stringResource(R.string.ok), tint = TerminalGreen)
+                                }
+                            }
+                        },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showLangMenu = false
+                            onSetLanguage("en")
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { 
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.lang_arabic), modifier = Modifier.weight(1f))
+                                if (selectedLanguage == "ar") {
+                                    Icon(Icons.Default.Check, contentDescription = stringResource(R.string.ok), tint = TerminalGreen)
+                                }
+                            }
+                        },
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            showLangMenu = false
+                            onSetLanguage("ar")
                         }
                     )
                 }
@@ -352,6 +514,7 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_whatsapp)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showSocialMenu = false
                             onWhatsAppClick(inputText)
                         }
@@ -359,6 +522,7 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_telegram)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showSocialMenu = false
                             onTelegramClick(inputText)
                         }
@@ -369,6 +533,7 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_base64_encode)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showDevMenu = false
                             onBase64Encode()
                         }
@@ -376,6 +541,7 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_base64_decode)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showDevMenu = false
                             onBase64Decode()
                         }
@@ -383,6 +549,7 @@ private fun PureLinkTopBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.menu_uuid)) },
                         onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
                             showDevMenu = false
                             onGenerateUuid()
                         }
@@ -551,4 +718,44 @@ private fun SettingsSection(
             onCheckedChange = onToastChange
         )
     }
+}
+
+@Composable
+fun DonateDialog(
+    onDismiss: () -> Unit,
+    onPayPalClick: () -> Unit,
+    onInstaPayClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.donate_title), fontFamily = FontFamily.Monospace, color = TerminalGreen) },
+        text = {
+            Column {
+                Text(text = stringResource(R.string.donate_message), color = TextPrimary)
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onPayPalClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
+                ) {
+                    Text(text = stringResource(R.string.btn_paypal), color = TextPrimary)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = onInstaPayClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonSecondary)
+                ) {
+                    Text(text = stringResource(R.string.btn_instapay), color = TextPrimary)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.btn_ok), color = TerminalGreen)
+            }
+        },
+        containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
+        textContentColor = TextPrimary
+    )
 }

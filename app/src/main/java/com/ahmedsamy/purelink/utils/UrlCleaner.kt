@@ -84,28 +84,56 @@ object UrlCleaner {
     }
 
     /**
+     * Data class to hold processing results for dynamic feedback.
+     */
+    data class ProcessingResult(
+        val resultText: String,
+        val cleanCount: Int,
+        val unshortenCount: Int
+    )
+
+    /**
      * Processes the text: finds URLs, optionally unshortens them, and cleans them.
      * Handles mixed text with multiple URLs.
      */
-    suspend fun processText(text: String, unshorten: Boolean): String = withContext(Dispatchers.IO) {
+    suspend fun processText(text: String, unshorten: Boolean): ProcessingResult = withContext(Dispatchers.IO) {
         val matches = URL_EXTRACTOR_REGEX.findAll(text).toList()
-        if (matches.isEmpty()) return@withContext text
+        if (matches.isEmpty()) return@withContext ProcessingResult(text, 0, 0)
 
         val uniqueUrls = matches.map { it.value }.distinct()
         val urlMap = mutableMapOf<String, String>()
+        var globalCleanCount = 0
+        var globalUnshortenCount = 0
 
         uniqueUrls.forEach { url ->
-            var processed = url
+            var currentUrl = url
+            var wasUnshortened = false
+            
             if (unshorten) {
-                processed = resolveUrl(url)
+                val resolved = resolveUrl(url)
+                if (resolved != url) {
+                    currentUrl = resolved
+                    wasUnshortened = true
+                    globalUnshortenCount++
+                }
             }
-            processed = cleanSingleUrl(processed)
-            urlMap[url] = processed
+            
+            val cleaned = cleanSingleUrl(currentUrl)
+            if (cleaned != currentUrl || wasUnshortened) {
+                // We count it as "cleaned" if tracking params were removed 
+                // OR if it was unshortened (since that's usually the first step of cleaning)
+                // Actually, the user wants "Cleaned X" and "Unshortened Y".
+                if (cleaned != currentUrl) globalCleanCount++
+            }
+            
+            urlMap[url] = cleaned
         }
 
-        URL_EXTRACTOR_REGEX.replace(text) { match ->
+        val finalResult = URL_EXTRACTOR_REGEX.replace(text) { match ->
             urlMap[match.value] ?: match.value
         }
+        
+        ProcessingResult(finalResult, globalCleanCount, globalUnshortenCount)
     }
 
     /**
@@ -133,8 +161,8 @@ object UrlCleaner {
             connection.readTimeout = 5000
             connection.connect()
             
-            val location = connection.getHeaderField("Location") ?: connection.url.toString()
-            if (location.isNotEmpty()) location else shortUrl
+            val location = connection.getHeaderField("Location")
+            if (location != null && location.isNotEmpty()) location else shortUrl
         } catch (e: Exception) {
             e.printStackTrace()
             shortUrl

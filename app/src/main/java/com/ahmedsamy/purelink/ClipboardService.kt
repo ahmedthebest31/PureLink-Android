@@ -12,6 +12,7 @@ import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import android.content.Context
 import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.edit
 import com.ahmedsamy.purelink.data.HistoryRepository
@@ -51,8 +52,7 @@ class ClipboardService : AccessibilityService() {
         clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         historyRepository = HistoryRepository(this)
         clipboard.addPrimaryClipChangedListener(clipListener)
-
-        val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
+        val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
         if (!prefs.contains("monitoring_active")) {
             prefs.edit { putBoolean("monitoring_active", true) }
         }
@@ -74,7 +74,7 @@ class ClipboardService : AccessibilityService() {
             return
         }
 
-        val prefs = getSharedPreferences("PureLinkPrefs", MODE_PRIVATE)
+        val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
         val isMonitoringActive = prefs.getBoolean("monitoring_active", true)
 
         if (!isMonitoringActive) {
@@ -107,44 +107,40 @@ class ClipboardService : AccessibilityService() {
             return
         }
 
-        // Use UrlCleaner to handle mixed text (multiple URLs in one block)
-        val cleaned = UrlCleaner.cleanMixedText(text)
+        scope.launch {
+            try {
+                isProcessing = true
+                Log.d(TAG, "Found potential URLs. Processing asynchronously...")
+                
+                val unshortenEnabled = prefs.getBoolean("unshorten", false)
+                val result = UrlCleaner.processText(text, unshortenEnabled)
+                val cleaned = result.resultText
 
-        if (cleaned == text) {
-            Log.d(TAG, "Skipping - no changes needed")
-            return
-        }
-
-        Log.d(TAG, "Found dirty URLs. Cleaning...")
-        Log.d(TAG, "Original: $text")
-        Log.d(TAG, "Cleaned:  $cleaned")
-
-        isProcessing = true
-        Log.d(TAG, "Setting isProcessing = true")
-
-        try {
-            val newClip = ClipData.newPlainText("Cleaned by PureLink", cleaned)
-            clipboard.setPrimaryClip(newClip)
-            Log.d(TAG, "Clipboard updated with cleaned content")
-            
-            scope.launch(Dispatchers.IO) {
-                try {
-                    historyRepository.addUrl(cleaned)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to save history", e)
+                if (cleaned != text) {
+                    Log.d(TAG, "Found dirty URLs. Cleaning...")
+                    val newClip = ClipData.newPlainText(getString(R.string.clipboard_label), cleaned)
+                    clipboard.setPrimaryClip(newClip)
+                    
+                    try {
+                        historyRepository.addUrl(cleaned)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to save history", e)
+                    }
+                    
+                    notifyUser()
+                } else {
+                    Log.d(TAG, "Skipping - no changes needed after processing")
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed during background processing", e)
+            } finally {
+                // Reset flag after delay
+                handler.postDelayed({
+                    isProcessing = false
+                    Log.d(TAG, "Reset isProcessing = false")
+                }, 500)
             }
-            
-            notifyUser()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to update clipboard", e)
         }
-
-        // Reset flag after delay
-        handler.postDelayed({
-            isProcessing = false
-            Log.d(TAG, "Reset isProcessing = false")
-        }, 500)
     }
 
     private fun notifyUser() {

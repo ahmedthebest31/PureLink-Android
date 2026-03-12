@@ -15,8 +15,8 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="clean_link_action">Clean with Pure Link</string>
 
     <!-- UI Main Screen -->
-    <string name="app_title">->_ PureLink</string>
-    <string name="cleaned_count_desc">Cleaned: %1$d items</string>
+    <string name="app_title">PureLink</string>
+    <string name="cleaned_count_desc">Cleaned: %1$d</string>
     <string name="menu_desc">Menu</string>
 
     <string name="status_active">Status: Active 🛡️</string>
@@ -50,6 +50,30 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="menu_base64_encode">Base64 Encode</string>
     <string name="menu_base64_decode">Base64 Decode</string>
     <string name="menu_uuid">Generate UUID</string>
+    <string name="menu_language">Language</string>
+    <string name="menu_update">Update Tracking Filters</string>
+    <string name="menu_share">Share App</string>
+    <string name="menu_rate">Rate App</string>
+    <string name="menu_donate">Support Developer</string>
+    <string name="menu_github">Open GitHub</string>
+
+    <!-- Support Dialog -->
+    <string name="donate_title">Support PureLink</string>
+    <string name="donate_message">PureLink is free and open-source. If you find it useful, you can support the developer through the following methods:</string>
+    <string name="btn_paypal">PayPal</string>
+    <string name="btn_instapay">InstaPay (Egypt)</string>
+
+    <string name="clipboard_label">Cleaned by PureLink</string>
+    <string name="checking_updates">Checking for updates...</string>
+    <string name="tile_active">PureLink: ON</string>
+    <string name="tile_paused">PureLink: PAUSED</string>
+    <string name="tile_disabled">Service Disabled</string>
+    <string name="toast_monitor_on">Monitor ON 🟢</string>
+    <string name="toast_monitor_paused">Monitor PAUSED ⏸️</string>
+    <string name="update_success_title">Update Successful</string>
+    <string name="update_success_msg">Filters updated successfully. New rules applied.</string>
+    <string name="update_failed_title">Update Failed</string>
+    <string name="update_failed_msg">Failed to connect to GitHub. Check internet.</string>
 
     <!-- History Screen -->
     <string name="history_title">Recent History</string>
@@ -62,6 +86,11 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <!-- Toasts & Messages -->
     <string name="toast_done">DONE! 🚀</string>
     <string name="toast_cleaned">Cleaned! 🧹</string>
+    <string name="toast_no_links">No links found.</string>
+    <string name="toast_nothing_to_clean">Nothing to clean.</string>
+    <string name="toast_cleaned_plural">Cleaned %1$d links.</string>
+    <string name="toast_unshortened_plural">Cleaned %1$d and unshortened %2$d links.</string>
+    <string name="toast_open_browser_failed">No app found to open this link.</string>
     <string name="toast_paste_number">Paste number!</string>
     <string name="toast_paste_username">Paste username!</string>
     <string name="toast_whatsapp_unavailable">WhatsApp not available</string>
@@ -72,8 +101,12 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="battery_opt_unavailable">Battery optimization not available</string>
     <string name="toast_copied">Copied to clipboard</string>
     <string name="toast_open_failed">Could not open URL</string>
+    <string name="lang_system">System Default</string>
+    <string name="lang_english">English</string>
+    <string name="lang_arabic">العربية</string>
     
     <string name="about_title">About</string>
     <string name="about_message">PureLink v2.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nA privacy-focused, open-source URL sanitizer designed for the blind community. Built with Jetpack Compose.</string>
     <string name="btn_ok">OK</string>
+    <string name="share_text">Check out Pure Link, the ultimate privacy tool to clean tracking URLs! https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink</string>
 </resources>
