@@ -1,0 +1,8 @@
+# Example Keystore Configuration
+# Rename this file to 'signing.properties' and fill in your real data.
+# Note: 'storeFile' path is relative to the app module.
+
+storeFile=../my-release-key.jks
+storePassword=YourStorePassword123
+keyAlias=YourKeyAlias
+keyPassword=YourKeyPassword123

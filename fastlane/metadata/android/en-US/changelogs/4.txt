@@ -1,0 +1,6 @@
+Huge Update v3.0.0!
+- In-Place Cleaning: Select text in any app, tap Pure Link, and instantly clean and replace the link on the spot.
+- Full Localization: Seamlessly switch between English and Arabic interfaces.
+- Smarter Feedback: Get precise cleaning stats after every action.
+- Quick Settings Tile: Toggle the app directly from your notification shade.
+- Modernized Engine: Android 15 (SDK 36) support with massively optimized UI for maximum battery saving.

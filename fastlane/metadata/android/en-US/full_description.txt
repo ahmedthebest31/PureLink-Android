@@ -1,34 +1,35 @@
-Pure Link v2.0.0 is the ultimate "Swiss Army Knife" for privacy-conscious users. It is a powerful, lightweight utility designed to strip tracking parameters, expand shortened links, and maintain a history of your cleaned URLs, all wrapped in a high-contrast Terminal style interface.
+Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and developers. It is a powerful, Ultra-Lightweight URL cleaner designed to strip tracking parameters, expand shortened links, open direct chats, and provide essential developer tools—all wrapped in a Sci-Fi themed, screen-reader optimized interface.
 
-🛡️ PRIVACY & URL SANITIZATION
+🛡️ PRIVACY & CORE SANITIZATION
 
-• Deep Cleaning: Instantly removes tracking tags like "utm_", "fbclid", "gclid", and "ref" from shared links.
-• Smart Unshortener: Safely expands shortened URLs (e.g., bit.ly) in the background to reveal the true destination.
-• Bot-Proof Resolver: Bypasses server-side bot protections when resolving links.
+* Flexible Usage: You are in full control. Clean links manually through the main app interface, share links directly to Pure Link from other apps, or enable the optional background monitoring service for full automation.
+* Deep Cleaning & Invisible Processing: Share any link from your browser or other apps directly to Pure Link. It instantly removes invasive tracking tags (like "utm_", "fbclid", "gclid", and "ref") and copies the clean URL to your clipboard without ever opening a new screen or interrupting your workflow!
+* In-Place Text Cleaning: Select any text or URL inside any app, tap "Pure Link" from the context menu, and it will instantly clean and replace the link right where you are typing.
+* Smart Unshortener & Advanced Resolution: Safely expands shortened URLs (e.g., bit.ly) in the background to reveal the true destination. It simulates standard browser requests to ensure complex redirect chains resolve correctly, protecting you from hidden malicious sites.
+* Auto-Updating Filters: Automatically fetches the latest tracking filters from our GitHub repository every week, keeping your privacy protection up-to-date without needing an app update.
 
-📜 HISTORY & SMART RULES
+📜 SMART WORKFLOW & TOOLS
 
-• Recent History: Saves the last 10 processed links locally for quick access (Copy/Open).
-• Auto-Updates: Automatically fetches the latest tracking filters from GitHub weekly, keeping you protected against new trackers without a full app update.
-
-👁️ BACKGROUND MONITOR
-
-• Clipboard Guard: Runs silently to detect and clean copied links automatically.
-• Quick Settings Tile: Toggle the service instantly from your notification shade.
-• Haptic Feedback: Vibrates to confirm when a link has been processed.
+* Quick Settings Tile: Conveniently toggle the optional clipboard monitoring service on or off directly from your phone's top notification shade.
+* Bilingual Support: Seamlessly switch between English and Arabic interfaces on the fly without restarting the app.
+* Smart History: Saves only the actually cleaned links (up to 10) locally for quick access, allowing you to re-copy or share them easily.
+* Direct Message: Start a chat on your favorite messaging apps instantly using just a phone number or username, without saving them to your contacts.
+* Developer Utilities: Built-in Base64 Encoder/Decoder and a one-click UUID Generator for quick text processing.
 
 ♿ ACCESSIBILITY FIRST (Screen Reader Optimized)
 
-• Designed by a blind developer specifically for maximum efficiency with TalkBack.
-• High-Contrast UI: "Green on Black" terminal style, perfect for low-vision users and battery saving.
-• Fully labeled interactive elements for a seamless navigation experience.
+* Designed by a Blind Developer: Built from the ground up with a "Blind-First" approach, ensuring 100% compatibility with TalkBack and other screen readers. Every element is clearly labeled.
+* Smart Feedback: Get precise details and haptic vibrations after every action (e.g., "2 links cleaned, 1 unshortened").
+* Sci-Fi Theme & Maximum Efficiency: Features a sleek "Green on Black" terminal style designed for ultimate energy efficiency. It is highly optimized to run indefinitely without consuming your device's battery or system resources.
 
-⚡ SYSTEM INTEGRATION
+💻 ALSO AVAILABLE ON DESKTOP
 
-• Share Target: Share links directly from YouTube or Chrome to Pure Link for instant cleaning.
-• Process Text: Select any text system-wide -> Choose "Pure Link Clean".
-
-Pure Link is fully native, lightweight (~2MB), and respects your privacy.
+Looking for this power on your PC? Check out "Pure Link Desktop" on our GitHub repository. It’s a high-performance system tool written in Go (Golang) that runs silently in your system tray.
+https://github.com/ahmedthebest31/PureLink
 
 Open Source Project:
 https://github.com/ahmedthebest31/PureLink-Android
+
+⚠️ ACCESSIBILITY SERVICE API DISCLOSURE:
+To enable its core background automation, Pure Link utilizes the AccessibilityService API. When the background monitoring feature is enabled by the user, this API is used to detect copied URLs across your screen or clipboard. This allows the app to instantly unshorten links and remove tracking parameters in the background without requiring you to manually open the app.
+Privacy Guarantee: We respect your privacy. This API is used EXCLUSIVELY for detecting and sanitizing links. We DO NOT collect, store, record, or share any of your personal information, screen content, or clipboard data with any third parties.

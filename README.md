@@ -24,14 +24,13 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 
 ### ⚡ System Integration
 * **Invisible Share Target:** Sharing a link to PureLink now triggers a transparent activity that cleans, copies, and closes instantly without disrupting your flow.
-* **Process Text:** Select any text system-wide -> Click the 3 dots -> Choose "PureLink Clean".
+* **In-Place Text Cleaning:** Select any text or URL system-wide -> Click the context menu (3 dots) -> Choose "Pure Link". It will instantly clean and replace the link right where you are typing!
 
 ### 🎨 UI & Accessibility
-* **Jetpack Compose:** The entire UI has been rewritten from XML to **Jetpack Compose**, resulting in a smoother, more responsive, and lighter interface.
-* **Accessibility First:** Enhanced TalkBack support with labeled touch targets and semantic descriptions for all interactive elements.
-* **Terminal Esthetic:** Polished "Green-on-Black" theme with system bar transparency (Edge-to-Edge).
-
----
+* **Full Localization:** Seamlessly switch between English and Arabic interfaces on the fly with full RTL support.
+* **Jetpack Compose:** The entire UI is built with Jetpack Compose, resulting in a smoother, more responsive, and lighter interface.
+* **Accessibility First:** Designed by a blind developer. Enhanced TalkBack support with labeled touch targets and semantic descriptions for all interactive elements.
+* **Terminal Aesthetic:** Polished "Green-on-Black" theme with system bar transparency, optimized for ultimate OLED battery saving.---
 
 ## 🛠️ Tech Stack
 
@@ -50,13 +49,17 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 
 ## 📥 Download
 
+<a href="https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="60">
+</a>
+&nbsp;&nbsp;
 <a href="https://apt.izzysoft.de/fdroid/index/apk/com.ahmedsamy.purelink">
   <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="60">
 </a>
 
-Or get the latest APK from the [Releases page](https://github.com/ahmedthebest31/PureLink-Android/releases).
+Or get the latest APK directly from the [Releases page](https://github.com/ahmedthebest31/PureLink-Android/releases).
 
-> **Note:** This app is fully native, lightweight (~2MB), and requires no unnecessary permissions.
+> **Note:** This app is fully native, lightweight (~2MB), respects your privacy, and requires no unnecessary permissions.
 
 ---
 

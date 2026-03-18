@@ -11,52 +11,38 @@ android {
     namespace = "com.ahmedsamy.purelink"
     compileSdk = 36
     
-    dependenciesInfo {
-        // Privacy: Disable dependency metadata for IzzyOnDroid compliance
-        includeInApk = false
-        includeInBundle = true
-    }
-
     defaultConfig {
         applicationId = "com.ahmedsamy.purelink"
-        
         minSdk = 26
         targetSdk = 36
-        
-        versionCode = 3
-        versionName = "2.0.0"
+        versionCode = 4
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Keep only English and Arabic resources to drastically reduce APK/AAB size
+        resourceConfigurations += listOf("en", "ar")
     }
 
     signingConfigs {
-        // 1. Create dummy config to prevent CI/CD build failures
-        create("release") {
-            storeFile = file("debug.keystore")
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
-
-        // 2. Load local signing keys if available
+        // Load local signing keys if available
         val props = Properties()
         val localProperties = File(rootDir, "signing.properties")
         if (localProperties.exists()) {
             localProperties.inputStream().use { props.load(it) }
-            getByName("release") {
+            create("release") {
                 storeFile = file(props.getProperty("release.store.file"))
                 storePassword = props.getProperty("release.store.password")
                 keyAlias = props.getProperty("release.key.alias")
                 keyPassword = props.getProperty("release.key.password")
             }
         } else {
-            println("NOTE: signing.properties not found. Using default keys for build.")
+            println("NOTE: signing.properties not found. Building unsigned APK.")
         }
     }
 
     buildTypes {
         getByName("debug") {
-            // Keep debug builds fast and open
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
@@ -65,23 +51,40 @@ android {
         }
 
         getByName("release") {
-            // Optimize APK size (~2MB) using R8
             isMinifyEnabled = true
             isShrinkResources = true
-            
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             isDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
+            
+            // Apply signing config ONLY if local properties exist
+            val localProperties = File(rootDir, "signing.properties")
+            if (localProperties.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                signingConfig = null
+            }
+
+            // --- Dependency Info Configuration ---
+            // Uncomment the block below when building for Google Play to maximize privacy and reduce size.
+            // Comment it out when building for IzzyOnDroid/F-Droid so their bots can analyze dependencies.
+            /*
+            dependenciesInfo {
+                includeInApk = false
+                includeInBundle = false
+            }
+            */
         }
     }
 
-    // Auto-rename output APK: PureLink-v2.0.0.apk
+    // Auto-rename output APKs dynamically based on their build variant
     applicationVariants.configureEach {
+        val variantName = this.name
         outputs.mapNotNull { it as? BaseVariantOutputImpl }.forEach {
-            it.outputFileName = "PureLink-v${versionName}.apk"
+            val suffix = if (variantName == "release") "-Official" else "-Debug"
+            it.outputFileName = "PureLink-v${versionName}${suffix}.apk"
         }
     }
 
