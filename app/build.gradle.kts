@@ -11,22 +11,17 @@ android {
     namespace = "com.ahmedsamy.purelink"
     compileSdk = 36
     
-    dependenciesInfo {
-        // Privacy: Disable dependency metadata for IzzyOnDroid compliance
-        includeInApk = false
-        includeInBundle = true
-    }
-
     defaultConfig {
         applicationId = "com.ahmedsamy.purelink"
-        
         minSdk = 26
         targetSdk = 36
-        
-        versionCode = 3
-        versionName = "2.0.0"
+        versionCode = 4
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Keep only English and Arabic resources to drastically reduce APK/AAB size
+        resourceConfigurations += listOf("en", "ar")
     }
 
     signingConfigs {
@@ -55,8 +50,8 @@ android {
     }
 
     buildTypes {
+        // 1. Debug Build: Fast compilation, open for testing
         getByName("debug") {
-            // Keep debug builds fast and open
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = true
@@ -64,24 +59,46 @@ android {
             versionNameSuffix = "-debug"
         }
 
+        // 2. Official Release (For Google Play AAB & GitHub APK): Highly optimized, max privacy
         getByName("release") {
-            // Optimize APK size (~2MB) using R8
             isMinifyEnabled = true
             isShrinkResources = true
-            
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
             isDebuggable = false
             signingConfig = signingConfigs.getByName("release")
+            
+            // Privacy: Disable dependency metadata for official public releases
+            dependenciesInfo {
+                includeInApk = false
+                includeInBundle = false
+            }
+        }
+
+        // 3. IzzyOnDroid Release: Optimized but retains FOSS metadata they prefer
+        create("izzyRelease") {
+            initWith(getByName("release"))
+            
+            // Keep dependency info specifically for IzzyOnDroid analysis
+            dependenciesInfo {
+                includeInApk = true
+                includeInBundle = true
+            }
         }
     }
 
-    // Auto-rename output APK: PureLink-v2.0.0.apk
+    // Auto-rename output APKs dynamically based on their build variant
     applicationVariants.configureEach {
+        val variantName = this.name
         outputs.mapNotNull { it as? BaseVariantOutputImpl }.forEach {
-            it.outputFileName = "PureLink-v${versionName}.apk"
+            val suffix = when (variantName) {
+                "izzyRelease" -> "-IzzyOnDroid"
+                "release" -> "-Official"
+                else -> "-Debug"
+            }
+            it.outputFileName = "PureLink-v${versionName}${suffix}.apk"
         }
     }
 
