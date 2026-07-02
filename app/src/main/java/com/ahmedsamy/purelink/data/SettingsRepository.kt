@@ -53,4 +53,14 @@ class SettingsRepository(context: Context) {
     fun setYoutubeShortsEnabled(enabled: Boolean) {
         prefs.edit { putBoolean("youtube_shorts", enabled) }
     }
+
+    fun getIgnoreList(): Set<String> {
+        val raw = prefs.getString("ignore_list", "") ?: ""
+        if (raw.isBlank()) return emptySet()
+        return raw.split(",").map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet()
+    }
+
+    fun setIgnoreList(domains: Set<String>) {
+        prefs.edit { putString("ignore_list", domains.joinToString(",")) }
+    }
 }

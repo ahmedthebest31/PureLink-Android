@@ -36,6 +36,12 @@
     
     <string name="setting_unshorten">فك الروابط المختصرة</string>
     <string name="setting_youtube_shorts">تحويل YouTube Shorts</string>
+    <string name="setting_ignore_list">قائمة التجاهل</string>
+    <string name="ignore_list_add">إضافة نطاق</string>
+    <string name="ignore_list_add_hint">أدخل النطاق (مثال: example.com)</string>
+    <string name="ignore_list_delete">حذف %1$s</string>
+    <string name="ignore_list_empty">لم يتم تجاهل أي نطاقات بعد.\nاضغط + لإضافة نطاق.</string>
+    <string name="btn_add">إضافة</string>
     <string name="setting_haptic">ردود الفعل اللمسية</string>
     <string name="setting_verbose">وضع التفاصيل (الإشعارات)</string>
 

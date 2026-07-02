@@ -81,6 +81,19 @@ object UrlCleaner {
     }
 
     /**
+     * Checks if a URL's host is in the ignore list.
+     */
+    fun isIgnored(url: String, ignoreList: Set<String>): Boolean {
+        if (ignoreList.isEmpty()) return false
+        return try {
+            val host = URL(url).host?.lowercase() ?: return false
+            ignoreList.any { host == it || host.endsWith(".$it") }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
      * Converts YouTube Shorts URLs to standard watch format.
      * Handles youtube.com/shorts/XXX and youtu.be/shorts/XXX.
      */
@@ -105,7 +118,7 @@ object UrlCleaner {
      * Processes the text: finds URLs, optionally unshortens them, converts YouTube Shorts,
      * and cleans them. Handles mixed text with multiple URLs.
      */
-    suspend fun processText(text: String, unshorten: Boolean, convertShorts: Boolean = false): ProcessingResult = withContext(Dispatchers.IO) {
+    suspend fun processText(text: String, unshorten: Boolean, convertShorts: Boolean = false, ignoreList: Set<String> = emptySet()): ProcessingResult = withContext(Dispatchers.IO) {
         val matches = URL_EXTRACTOR_REGEX.findAll(text).toList()
         if (matches.isEmpty()) return@withContext ProcessingResult(text, 0, 0)
 
@@ -118,12 +131,21 @@ object UrlCleaner {
             var currentUrl = url
             var wasUnshortened = false
             
+            if (isIgnored(url, ignoreList)) {
+                urlMap[url] = url
+                return@forEach
+            }
+            
             if (unshorten) {
                 val resolved = resolveUrl(url)
                 if (resolved != url) {
                     currentUrl = resolved
                     wasUnshortened = true
                     globalUnshortenCount++
+                }
+                if (isIgnored(currentUrl, ignoreList)) {
+                    urlMap[url] = currentUrl
+                    return@forEach
                 }
             }
             

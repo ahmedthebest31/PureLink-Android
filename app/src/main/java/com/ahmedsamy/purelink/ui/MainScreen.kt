@@ -78,7 +78,7 @@ import com.ahmedsamy.purelink.ui.theme.TextSecondary
 
 // Enum for simple state-based navigation
 enum class Screen {
-    HOME, HISTORY
+    HOME, HISTORY, IGNORE_LIST
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -186,7 +186,15 @@ fun MainScreen(
         )
     }
 
-    if (currentScreen == Screen.HISTORY) {
+    if (currentScreen == Screen.IGNORE_LIST) {
+        IgnoreListScreen(
+            viewModel = viewModel,
+            onBackClick = {
+                FeedbackUtils.performHapticFeedback(context)
+                currentScreen = Screen.HOME
+            }
+        )
+    } else if (currentScreen == Screen.HISTORY) {
         HistoryScreen(
             viewModel = viewModel,
             onBackClick = { 
@@ -283,6 +291,7 @@ fun MainScreen(
                 SettingsSection(
                     unshortenEnabled = uiState.unshortenEnabled,
                     youtubeShortsEnabled = uiState.youtubeShortsEnabled,
+                    ignoreList = uiState.ignoreList,
                     vibrateEnabled = uiState.vibrateEnabled,
                     toastEnabled = uiState.toastEnabled,
                     onUnshortenChange = {
@@ -292,6 +301,10 @@ fun MainScreen(
                     onYoutubeShortsChange = {
                         FeedbackUtils.performHapticFeedback(context)
                         viewModel.setYoutubeShortsEnabled(it)
+                    },
+                    onIgnoreListClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        currentScreen = Screen.IGNORE_LIST
                     },
                     onVibrateChange = {
                         FeedbackUtils.performHapticFeedback(context)
@@ -699,10 +712,12 @@ private fun ServiceCard(isEnabled: Boolean, onCardClick: () -> Unit, onSwitchCli
 private fun SettingsSection(
     unshortenEnabled: Boolean,
     youtubeShortsEnabled: Boolean,
+    ignoreList: Set<String>,
     vibrateEnabled: Boolean,
     toastEnabled: Boolean,
     onUnshortenChange: (Boolean) -> Unit,
     onYoutubeShortsChange: (Boolean) -> Unit,
+    onIgnoreListClick: () -> Unit,
     onVibrateChange: (Boolean) -> Unit,
     onToastChange: (Boolean) -> Unit
 ) {
@@ -718,6 +733,26 @@ private fun SettingsSection(
             checked = youtubeShortsEnabled,
             onCheckedChange = onYoutubeShortsChange
         )
+        HorizontalDivider(color = DividerDark)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onIgnoreListClick() }
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.setting_ignore_list),
+                color = TextLighter,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "(${ignoreList.size})",
+                color = TextMuted,
+                fontFamily = FontFamily.Monospace
+            )
+        }
         HorizontalDivider(color = DividerDark)
         SettingsSwitch(
             label = stringResource(R.string.setting_haptic),

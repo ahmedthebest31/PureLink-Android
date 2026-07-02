@@ -35,6 +35,7 @@ data class MainUiState(
         val isServiceEnabled: Boolean = false,
         val unshortenEnabled: Boolean = false,
         val youtubeShortsEnabled: Boolean = true,
+        val ignoreList: Set<String> = emptySet(),
         val vibrateEnabled: Boolean = true,
         val toastEnabled: Boolean = true,
         val isResolving: Boolean = false,
@@ -129,6 +130,7 @@ class MainViewModel(
                     cleanCount = prefs.getInt("stats_count", 0),
                     unshortenEnabled = settingsRepository.isUnshortenEnabled(),
                     youtubeShortsEnabled = settingsRepository.isYoutubeShortsEnabled(),
+                    ignoreList = settingsRepository.getIgnoreList(),
                     vibrateEnabled = settingsRepository.isVibrateEnabled(),
                     toastEnabled = settingsRepository.isToastEnabled(),
                     selectedLanguage = settingsRepository.getLanguage()
@@ -185,7 +187,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             try {
-                val result = UrlCleaner.processText(text, _uiState.value.unshortenEnabled, _uiState.value.youtubeShortsEnabled)
+                val result = UrlCleaner.processText(text, _uiState.value.unshortenEnabled, _uiState.value.youtubeShortsEnabled, _uiState.value.ignoreList)
                 finalizeClean(result, text)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -248,6 +250,11 @@ class MainViewModel(
         _uiState.update { it.copy(youtubeShortsEnabled = enabled) }
     }
 
+    fun setIgnoreList(domains: Set<String>) {
+        settingsRepository.setIgnoreList(domains)
+        _uiState.update { it.copy(ignoreList = domains) }
+    }
+
     fun setVibrateEnabled(enabled: Boolean) {
         settingsRepository.setVibrateEnabled(enabled)
         _uiState.update { it.copy(vibrateEnabled = enabled) }
@@ -289,7 +296,7 @@ class MainViewModel(
     fun handleIncomingText(text: String?) {
         if (!text.isNullOrEmpty()) {
             viewModelScope.launch {
-                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled(), settingsRepository.isYoutubeShortsEnabled())
+                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled(), settingsRepository.isYoutubeShortsEnabled(), settingsRepository.getIgnoreList())
                 finalizeClean(result, text)
             }
         }

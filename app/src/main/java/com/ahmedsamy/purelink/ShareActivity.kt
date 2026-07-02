@@ -40,9 +40,10 @@ class ShareActivity : AppCompatActivity() {
                 val settingsRepo = SettingsRepository(this@ShareActivity)
                 val unshortenEnabled = settingsRepo.isUnshortenEnabled()
                 val youtubeShortsEnabled = settingsRepo.isYoutubeShortsEnabled()
+                val ignoreList = settingsRepo.getIgnoreList()
                 
                 // Clean, Unshorten, and Convert Shorts
-                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled)
+                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled, ignoreList)
                 val cleaned = result.resultText
                 
                 // Save to history if changed

@@ -39,6 +39,12 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     
     <string name="setting_unshorten">Unshorten URLs</string>
     <string name="setting_youtube_shorts">Convert YouTube Shorts</string>
+    <string name="setting_ignore_list">Ignore List</string>
+    <string name="ignore_list_add">Add Domain</string>
+    <string name="ignore_list_add_hint">Enter domain (e.g., example.com)</string>
+    <string name="ignore_list_delete">Delete %1$s</string>
+    <string name="ignore_list_empty">No domains ignored yet.\nTap + to add one.</string>
+    <string name="btn_add">Add</string>
     <string name="setting_haptic">Haptic Feedback</string>
     <string name="setting_verbose">Verbose Mode (Toasts)</string>
 

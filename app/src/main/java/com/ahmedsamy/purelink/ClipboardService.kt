@@ -117,7 +117,9 @@ class ClipboardService : AccessibilityService() {
                 
                 val unshortenEnabled = prefs.getBoolean("unshorten", false)
                 val youtubeShortsEnabled = prefs.getBoolean("youtube_shorts", true)
-                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled)
+                val ignoreListRaw = prefs.getString("ignore_list", "") ?: ""
+                val ignoreList = if (ignoreListRaw.isBlank()) emptySet() else ignoreListRaw.split(",").map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet()
+                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled, ignoreList)
                 val cleaned = result.resultText
 
                 if (cleaned != text) {
