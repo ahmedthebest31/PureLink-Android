@@ -17,6 +17,7 @@ import android.view.accessibility.AccessibilityEvent
 import androidx.core.content.edit
 import com.ahmedsamy.purelink.data.HistoryRepository
 import com.ahmedsamy.purelink.utils.FeedbackUtils
+import com.ahmedsamy.purelink.utils.SmartCommands
 import com.ahmedsamy.purelink.utils.UrlCleaner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -113,7 +114,22 @@ class ClipboardService : AccessibilityService() {
         scope.launch {
             try {
                 isProcessing = true
-                Log.d(TAG, "Found potential URLs. Processing asynchronously...")
+                Log.d(TAG, "Processing clipboard content...")
+
+                val smartCommandsEnabled = prefs.getBoolean("smart_commands", false)
+                if (smartCommandsEnabled) {
+                    val cmdResult = SmartCommands.parseAndExecute(text, this@ClipboardService)
+                    if (cmdResult != null) {
+                        Log.d(TAG, "Smart command matched")
+                        val newClip = ClipData.newPlainText(getString(R.string.clipboard_label), cmdResult.output)
+                        clipboard.setPrimaryClip(newClip)
+                        FeedbackUtils.performHapticFeedback(this@ClipboardService)
+                        FeedbackUtils.showToast(this@ClipboardService, getString(cmdResult.toastResId))
+                        return@launch
+                    }
+                }
+
+                Log.d(TAG, "No smart command matched. Processing URLs...")
                 
                 val unshortenEnabled = prefs.getBoolean("unshorten", false)
                 val youtubeShortsEnabled = prefs.getBoolean("youtube_shorts", true)

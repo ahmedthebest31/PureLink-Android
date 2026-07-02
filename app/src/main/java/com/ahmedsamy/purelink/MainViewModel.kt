@@ -35,6 +35,7 @@ data class MainUiState(
         val isServiceEnabled: Boolean = false,
         val unshortenEnabled: Boolean = false,
         val youtubeShortsEnabled: Boolean = true,
+        val smartCommandsEnabled: Boolean = false,
         val ignoreList: Set<String> = emptySet(),
         val vibrateEnabled: Boolean = true,
         val toastEnabled: Boolean = true,
@@ -42,6 +43,7 @@ data class MainUiState(
         val toastMessage: ToastMessage? = null,
         val updateStatus: UpdateStatus = UpdateStatus.IDLE,
         val showOnboardingAlert: Boolean = false,
+        val showSmartCommandsHelp: Boolean = false,
         val selectedLanguage: String = ""
 )
 
@@ -130,6 +132,7 @@ class MainViewModel(
                     cleanCount = prefs.getInt("stats_count", 0),
                     unshortenEnabled = settingsRepository.isUnshortenEnabled(),
                     youtubeShortsEnabled = settingsRepository.isYoutubeShortsEnabled(),
+                    smartCommandsEnabled = settingsRepository.isSmartCommandsEnabled(),
                     ignoreList = settingsRepository.getIgnoreList(),
                     vibrateEnabled = settingsRepository.isVibrateEnabled(),
                     toastEnabled = settingsRepository.isToastEnabled(),
@@ -253,6 +256,23 @@ class MainViewModel(
     fun setIgnoreList(domains: Set<String>) {
         settingsRepository.setIgnoreList(domains)
         _uiState.update { it.copy(ignoreList = domains) }
+    }
+
+    fun setSmartCommandsEnabled(enabled: Boolean) {
+        settingsRepository.setSmartCommandsEnabled(enabled)
+        _uiState.update { it.copy(smartCommandsEnabled = enabled) }
+        if (enabled && !settingsRepository.hasSeenSmartCommandsHelp()) {
+            _uiState.update { it.copy(showSmartCommandsHelp = true) }
+        }
+    }
+
+    fun dismissSmartCommandsHelp() {
+        settingsRepository.setSmartCommandsHelpSeen()
+        _uiState.update { it.copy(showSmartCommandsHelp = false) }
+    }
+
+    fun showSmartCommandsHelp() {
+        _uiState.update { it.copy(showSmartCommandsHelp = true) }
     }
 
     fun setVibrateEnabled(enabled: Boolean) {

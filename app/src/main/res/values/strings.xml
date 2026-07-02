@@ -47,6 +47,33 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="btn_add">Add</string>
     <string name="setting_haptic">Haptic Feedback</string>
     <string name="setting_verbose">Verbose Mode (Toasts)</string>
+    <string name="setting_smart_commands">Smart Commands</string>
+    <string name="desc_smart_commands_help">Smart Commands Help</string>
+    <string name="smart_commands_help_title">Smart Commands</string>
+    <string name="smart_commands_help_desc">Commands run when clipboard content starts with /command:</string>
+    <string name="smart_cmd_wa">Open WhatsApp chat</string>
+    <string name="smart_cmd_tg">Open Telegram chat</string>
+    <string name="smart_cmd_b64e">Base64 encode text</string>
+    <string name="smart_cmd_b64d">Base64 decode data</string>
+    <string name="smart_cmd_uuid">Generate a UUID</string>
+    <string name="smart_cmd_upper">Convert to UPPERCASE</string>
+    <string name="smart_cmd_lower">Convert to lowercase</string>
+    <string name="smart_cmd_capitalize">Capitalize Words</string>
+    <string name="smart_cmd_reverse">Reverse Text</string>
+    <string name="smart_cmd_clear">Remove all formatting</string>
+    <string name="smart_cmd_trim">Trim whitespace</string>
+    <string name="btn_got_it">Got it</string>
+    <string name="toast_smart_upper">Text converted to UPPERCASE</string>
+    <string name="toast_smart_lower">Text converted to lowercase</string>
+    <string name="toast_smart_capitalize">Text capitalized</string>
+    <string name="toast_smart_reverse">Text reversed</string>
+    <string name="toast_smart_clear">Formatting cleared</string>
+    <string name="toast_smart_trim">Whitespace trimmed</string>
+    <string name="toast_smart_wa">WhatsApp link created</string>
+    <string name="toast_smart_tg">Telegram link created</string>
+    <string name="toast_smart_b64e">Text encoded to Base64</string>
+    <string name="toast_smart_b64d">Text decoded from Base64</string>
+    <string name="toast_smart_uuid">UUID generated</string>
 
     <!-- Menu Items -->
     <string name="menu_social">Social Tools</string>

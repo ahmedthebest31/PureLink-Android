@@ -186,6 +186,15 @@ fun MainScreen(
         )
     }
 
+    if (uiState.showSmartCommandsHelp) {
+        SmartCommandsHelpDialog(
+            onDismiss = {
+                FeedbackUtils.performHapticFeedback(context)
+                viewModel.dismissSmartCommandsHelp()
+            }
+        )
+    }
+
     if (currentScreen == Screen.IGNORE_LIST) {
         IgnoreListScreen(
             viewModel = viewModel,
@@ -291,6 +300,7 @@ fun MainScreen(
                 SettingsSection(
                     unshortenEnabled = uiState.unshortenEnabled,
                     youtubeShortsEnabled = uiState.youtubeShortsEnabled,
+                    smartCommandsEnabled = uiState.smartCommandsEnabled,
                     ignoreList = uiState.ignoreList,
                     vibrateEnabled = uiState.vibrateEnabled,
                     toastEnabled = uiState.toastEnabled,
@@ -301,6 +311,14 @@ fun MainScreen(
                     onYoutubeShortsChange = {
                         FeedbackUtils.performHapticFeedback(context)
                         viewModel.setYoutubeShortsEnabled(it)
+                    },
+                    onSmartCommandsChange = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.setSmartCommandsEnabled(it)
+                    },
+                    onSmartCommandsHelpClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.showSmartCommandsHelp()
                     },
                     onIgnoreListClick = {
                         FeedbackUtils.performHapticFeedback(context)
@@ -712,11 +730,14 @@ private fun ServiceCard(isEnabled: Boolean, onCardClick: () -> Unit, onSwitchCli
 private fun SettingsSection(
     unshortenEnabled: Boolean,
     youtubeShortsEnabled: Boolean,
+    smartCommandsEnabled: Boolean,
     ignoreList: Set<String>,
     vibrateEnabled: Boolean,
     toastEnabled: Boolean,
     onUnshortenChange: (Boolean) -> Unit,
     onYoutubeShortsChange: (Boolean) -> Unit,
+    onSmartCommandsChange: (Boolean) -> Unit,
+    onSmartCommandsHelpClick: () -> Unit,
     onIgnoreListClick: () -> Unit,
     onVibrateChange: (Boolean) -> Unit,
     onToastChange: (Boolean) -> Unit
@@ -733,6 +754,40 @@ private fun SettingsSection(
             checked = youtubeShortsEnabled,
             onCheckedChange = onYoutubeShortsChange
         )
+        HorizontalDivider(color = DividerDark)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val smartCmdDesc = stringResource(R.string.desc_smart_commands_help)
+            Text(
+                text = stringResource(R.string.setting_smart_commands),
+                color = TextLighter,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = onSmartCommandsHelpClick,
+                modifier = Modifier.semantics { contentDescription = smartCmdDesc }
+            ) {
+                Text(
+                    text = "?",
+                    color = TerminalGreen,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Switch(
+                checked = smartCommandsEnabled,
+                onCheckedChange = onSmartCommandsChange,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = TerminalGreen,
+                    checkedTrackColor = TerminalGreen.copy(alpha = 0.5f)
+                )
+            )
+        }
         HorizontalDivider(color = DividerDark)
         Row(
             modifier = Modifier
@@ -766,6 +821,61 @@ private fun SettingsSection(
             onCheckedChange = onToastChange
         )
     }
+}
+
+@Composable
+private fun SmartCommandsHelpDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.smart_commands_help_title),
+                fontFamily = FontFamily.Monospace,
+                color = TerminalGreen
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.smart_commands_help_desc),
+                    color = TextPrimary
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                val commands = listOf(
+                    "wa <number>" to stringResource(R.string.smart_cmd_wa),
+                    "tg <user>" to stringResource(R.string.smart_cmd_tg),
+                    "b64e <text>" to stringResource(R.string.smart_cmd_b64e),
+                    "b64d <data>" to stringResource(R.string.smart_cmd_b64d),
+                    "uuid" to stringResource(R.string.smart_cmd_uuid),
+                    "upper [text]" to stringResource(R.string.smart_cmd_upper),
+                    "lower [text]" to stringResource(R.string.smart_cmd_lower),
+                    "capitalize [text]" to stringResource(R.string.smart_cmd_capitalize),
+                    "reverse [text]" to stringResource(R.string.smart_cmd_reverse),
+                    "clear [text]" to stringResource(R.string.smart_cmd_clear),
+                    "trim [text]" to stringResource(R.string.smart_cmd_trim)
+                )
+                commands.forEach { (cmd, desc) ->
+                    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+                        Text(
+                            text = "/$cmd",
+                            color = TerminalGreen,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.width(100.dp)
+                        )
+                        Text(text = desc, color = TextSecondary)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.btn_got_it), color = TerminalGreen)
+            }
+        },
+        containerColor = com.ahmedsamy.purelink.ui.theme.TerminalCardBackground,
+        textContentColor = TextPrimary
+    )
 }
 
 @Composable

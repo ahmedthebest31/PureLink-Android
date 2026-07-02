@@ -63,4 +63,20 @@ class SettingsRepository(context: Context) {
     fun setIgnoreList(domains: Set<String>) {
         prefs.edit { putString("ignore_list", domains.joinToString(",")) }
     }
+
+    fun isSmartCommandsEnabled(): Boolean {
+        return prefs.getBoolean("smart_commands", false)
+    }
+
+    fun setSmartCommandsEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean("smart_commands", enabled) }
+    }
+
+    fun hasSeenSmartCommandsHelp(): Boolean {
+        return prefs.getBoolean("smart_commands_help_seen", false)
+    }
+
+    fun setSmartCommandsHelpSeen() {
+        prefs.edit { putBoolean("smart_commands_help_seen", true) }
+    }
 }
