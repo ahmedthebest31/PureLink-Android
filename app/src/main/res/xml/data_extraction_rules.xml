@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="PureLinkPrefs.xml"/>
+        <exclude domain="database" path="purelink_history.db"/>
+        <exclude domain="file" path="rules_v1.json"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="PureLinkPrefs.xml"/>
+        <exclude domain="database" path="purelink_history.db"/>
+        <exclude domain="file" path="rules_v1.json"/>
+    </device-transfer>
+</data-extraction-rules>

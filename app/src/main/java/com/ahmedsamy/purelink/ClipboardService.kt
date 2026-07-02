@@ -20,6 +20,8 @@ import com.ahmedsamy.purelink.utils.FeedbackUtils
 import com.ahmedsamy.purelink.utils.UrlCleaner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @SuppressLint("AccessibilityPolicy")
@@ -31,7 +33,7 @@ class ClipboardService : AccessibilityService() {
 
     private lateinit var clipboard: ClipboardManager
     private lateinit var historyRepository: HistoryRepository
-    private val scope = CoroutineScope(Dispatchers.Main)
+    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val handler = Handler(Looper.getMainLooper())
 
     // Flag to prevent re-entry when we modify the clipboard ourselves
@@ -66,6 +68,7 @@ class ClipboardService : AccessibilityService() {
         if (::clipboard.isInitialized) {
             clipboard.removePrimaryClipChangedListener(clipListener)
         }
+        scope.cancel()
     }
 
     private fun checkAndClean() {

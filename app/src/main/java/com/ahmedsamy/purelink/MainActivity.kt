@@ -34,8 +34,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
 
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         
         // Schedule Background Updates
         setupPeriodicUpdates()
@@ -80,13 +80,16 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.updateServiceEnabled(isAccessibilityServiceEnabled())
-    }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
+        // Handle intents that arrived while paused
         handleIncomingIntent(intent)
     }
 

@@ -103,7 +103,7 @@
     <string name="lang_arabic">العربية</string>
     
     <string name="about_title">حول التطبيق</string>
-    <string name="about_message">PureLink v2.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nأداة خصوصية مفتوحة المصدر لتنظيف روابط التتبع. مصممة للمكفوفين ومبنية باستخدام Jetpack Compose.</string>
+    <string name="about_message">PureLink v3.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nأداة خصوصية مفتوحة المصدر لتنظيف روابط التتبع. مصممة للمكفوفين ومبنية باستخدام Jetpack Compose.</string>
     <string name="btn_ok">حسناً</string>
     <string name="share_text">جرب "بيور لينك"، الأداة المثالية للخصوصية لتنظيف روابط التتبع! https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink</string>
 </resources>

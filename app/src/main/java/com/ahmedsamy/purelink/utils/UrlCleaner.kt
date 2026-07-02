@@ -76,9 +76,6 @@ object UrlCleaner {
         if (result.endsWith("?") || result.endsWith("&")) {
             result = result.dropLast(1)
         }
-        if (result.endsWith("?")) {
-            result = result.dropLast(1)
-        }
 
         return result
     }
@@ -155,9 +152,9 @@ object UrlCleaner {
             }
             
             val connection = URL(urlStr).openConnection() as HttpURLConnection
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0")
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36")
             connection.instanceFollowRedirects = false
-            connection.connectTimeout = 5000 // 5s timeout
+            connection.connectTimeout = 5000
             connection.readTimeout = 5000
             connection.connect()
             

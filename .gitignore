@@ -41,3 +41,18 @@ key.properties
 *.py
 commit_msg.txt
 AUDIT_AND_MIGRATION_PLAN.md
+
+# Project analysis and reports
+PURELINK-ANALYSIS-REPORT.md
+
+# Desktop readme (reference only, not part of Android project)
+desktop-README.md
+
+# Old keystore config (replaced by signing.properties)
+keystore.properties
+
+# Release artifacts
+*.apk.sha256
+
+# Kotlin build cache
+.kotlin/

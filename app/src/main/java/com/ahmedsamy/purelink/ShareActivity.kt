@@ -8,10 +8,13 @@ import android.widget.Toast
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import com.ahmedsamy.purelink.data.HistoryRepository
+import com.ahmedsamy.purelink.data.SettingsRepository
 import com.ahmedsamy.purelink.utils.FeedbackUtils
 import com.ahmedsamy.purelink.utils.UrlCleaner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 class ShareActivity : AppCompatActivity() {
@@ -30,12 +33,12 @@ class ShareActivity : AppCompatActivity() {
             return
         }
 
-        val scope = CoroutineScope(Dispatchers.Main)
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         scope.launch {
             try {
                 // Get unshorten setting
-                val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
-                val unshortenEnabled = prefs.getBoolean("unshorten", false)
+                val settingsRepo = SettingsRepository(this@ShareActivity)
+                val unshortenEnabled = settingsRepo.isUnshortenEnabled()
                 
                 // Clean & Unshorten
                 val result = UrlCleaner.processText(text, unshortenEnabled)
@@ -78,6 +81,7 @@ class ShareActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
+                scope.cancel()
                 finish()
             }
         }

@@ -106,7 +106,7 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="lang_arabic">العربية</string>
     
     <string name="about_title">About</string>
-    <string name="about_message">PureLink v2.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nA privacy-focused, open-source URL sanitizer designed for the blind community. Built with Jetpack Compose.</string>
+    <string name="about_message">PureLink v3.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nA privacy-focused, open-source URL sanitizer designed for the blind community. Built with Jetpack Compose.</string>
     <string name="btn_ok">OK</string>
     <string name="share_text">Check out Pure Link, the ultimate privacy tool to clean tracking URLs! https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink</string>
 </resources>
