@@ -24,6 +24,8 @@ object UrlCleaner {
     @Volatile
     private var PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
 
+    fun getFilterCount(): Int = TRACKING_PARAMS.size
+
     private fun buildRegex(params: List<String>): Regex {
         return Regex("[?&](${params.joinToString("|") { Regex.escape(it) }})=[^&]*", RegexOption.IGNORE_CASE)
     }

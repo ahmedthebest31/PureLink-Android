@@ -79,4 +79,12 @@ class SettingsRepository(context: Context) {
     fun setSmartCommandsHelpSeen() {
         prefs.edit { putBoolean("smart_commands_help_seen", true) }
     }
+
+    fun getTheme(): String {
+        return prefs.getString("app_theme", "matrix") ?: "matrix"
+    }
+
+    fun setTheme(theme: String) {
+        prefs.edit { putString("app_theme", theme) }
+    }
 }

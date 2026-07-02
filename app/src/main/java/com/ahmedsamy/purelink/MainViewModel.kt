@@ -31,6 +31,8 @@ import com.ahmedsamy.purelink.utils.FeedbackUtils
 data class MainUiState(
         val isMonitoringActive: Boolean = true,
         val cleanCount: Int = 0,
+        val unshortenCount: Int = 0,
+        val filterCount: Int = 0,
         val inputText: String = "",
         val isServiceEnabled: Boolean = false,
         val unshortenEnabled: Boolean = false,
@@ -44,7 +46,10 @@ data class MainUiState(
         val updateStatus: UpdateStatus = UpdateStatus.IDLE,
         val showOnboardingAlert: Boolean = false,
         val showSmartCommandsHelp: Boolean = false,
-        val selectedLanguage: String = ""
+        val selectedLanguage: String = "",
+        val selectedTab: Int = 0,
+        val selectedTheme: String = "matrix",
+        val toolsOutputText: String = ""
 )
 
 sealed class ToastMessage {
@@ -130,13 +135,16 @@ class MainViewModel(
             it.copy(
                     isMonitoringActive = prefs.getBoolean("monitoring_active", true),
                     cleanCount = prefs.getInt("stats_count", 0),
+                    unshortenCount = prefs.getInt("stats_unshorten", 0),
+                    filterCount = UrlCleaner.getFilterCount(),
                     unshortenEnabled = settingsRepository.isUnshortenEnabled(),
                     youtubeShortsEnabled = settingsRepository.isYoutubeShortsEnabled(),
                     smartCommandsEnabled = settingsRepository.isSmartCommandsEnabled(),
                     ignoreList = settingsRepository.getIgnoreList(),
                     vibrateEnabled = settingsRepository.isVibrateEnabled(),
                     toastEnabled = settingsRepository.isToastEnabled(),
-                    selectedLanguage = settingsRepository.getLanguage()
+                    selectedLanguage = settingsRepository.getLanguage(),
+                    selectedTheme = settingsRepository.getTheme()
             )
         }
     }
@@ -208,7 +216,7 @@ class MainViewModel(
             copyToClipboard(cleanedText)
             
             if (result.cleanCount > 0 || result.unshortenCount > 0) {
-                incrementStats()
+                incrementStats(result.unshortenCount)
                 viewModelScope.launch {
                     try {
                         historyRepository.addUrl(cleanedText)
@@ -237,10 +245,14 @@ class MainViewModel(
         }
     }
 
-    private fun incrementStats() {
+    private fun incrementStats(unshortenDelta: Int = 0) {
         val newCount = _uiState.value.cleanCount + 1
-        prefs.edit { putInt("stats_count", newCount) }
-        _uiState.update { it.copy(cleanCount = newCount) }
+        val newUnshorten = _uiState.value.unshortenCount + unshortenDelta
+        prefs.edit {
+            putInt("stats_count", newCount)
+            putInt("stats_unshorten", newUnshorten)
+        }
+        _uiState.update { it.copy(cleanCount = newCount, unshortenCount = newUnshorten) }
     }
 
     fun setUnshortenEnabled(enabled: Boolean) {
@@ -275,6 +287,27 @@ class MainViewModel(
         _uiState.update { it.copy(showSmartCommandsHelp = true) }
     }
 
+    fun setSelectedTab(tab: Int) {
+        _uiState.update { it.copy(selectedTab = tab) }
+    }
+
+    fun setToolsOutput(text: String) {
+        _uiState.update { it.copy(toolsOutputText = text) }
+    }
+
+    fun clearToolsOutput() {
+        _uiState.update { it.copy(toolsOutputText = "") }
+    }
+
+    fun getFilterCount(): Int {
+        return UrlCleaner.getFilterCount()
+    }
+
+    fun setTheme(theme: String) {
+        settingsRepository.setTheme(theme)
+        _uiState.update { it.copy(selectedTheme = theme) }
+    }
+
     fun setVibrateEnabled(enabled: Boolean) {
         settingsRepository.setVibrateEnabled(enabled)
         _uiState.update { it.copy(vibrateEnabled = enabled) }
@@ -289,7 +322,7 @@ class MainViewModel(
         val text = _uiState.value.inputText.trim()
         if (text.isNotEmpty()) {
             val encoded = Base64.encodeToString(text.toByteArray(), Base64.NO_WRAP)
-            _uiState.update { it.copy(inputText = encoded) }
+            _uiState.update { it.copy(toolsOutputText = encoded) }
             copyToClipboard(encoded)
         }
     }
@@ -299,7 +332,7 @@ class MainViewModel(
         if (text.isNotEmpty()) {
             try {
                 val decoded = String(Base64.decode(text, Base64.NO_WRAP))
-                _uiState.update { it.copy(inputText = decoded) }
+                _uiState.update { it.copy(toolsOutputText = decoded) }
                 copyToClipboard(decoded)
             } catch (_: Exception) {
                 showToast(ToastMessage.Resource(R.string.toast_base64_invalid))
@@ -309,7 +342,7 @@ class MainViewModel(
 
     fun generateUuid() {
         val uuid = UUID.randomUUID().toString()
-        _uiState.update { it.copy(inputText = uuid) }
+        _uiState.update { it.copy(toolsOutputText = uuid) }
         copyToClipboard(uuid)
     }
 

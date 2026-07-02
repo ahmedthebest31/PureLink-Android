@@ -142,5 +142,46 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="about_title">About</string>
     <string name="about_message">PureLink v3.0.0\n\nAhmed Samy\nahmedthebest31@gmail.com\nhttps://github.com/ahmedthebest31\n\nA privacy-focused, open-source URL sanitizer designed for the blind community. Built with Jetpack Compose.</string>
     <string name="btn_ok">OK</string>
+    <string name="btn_copy">COPY</string>
+    <string name="btn_clear">CLEAR</string>
     <string name="share_text">Check out Pure Link, the ultimate privacy tool to clean tracking URLs! https://play.google.com/store/apps/details?id=com.ahmedsamy.purelink</string>
+
+    <!-- Bottom Navigation Tabs -->
+    <string name="tab_dashboard">Dashboard</string>
+    <string name="tab_tools">Tools</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Dashboard Tab -->
+    <string name="system_online">SYSTEM: ONLINE</string>
+    <string name="system_offline">SYSTEM: OFFLINE</string>
+    <string name="stat_cleaned">Cleaned</string>
+    <string name="stat_unshortened">Unshortened</string>
+    <string name="stat_filters">Filters</string>
+    <string name="stat_ignored">Ignored</string>
+
+    <!-- Tools Tab -->
+    <string name="section_social_utilities">SOCIAL UTILITIES</string>
+    <string name="section_dev_tools">DEVELOPER TOOLS</string>
+    <string name="output_field_desc">Tool Output</string>
+    <string name="btn_wa">WhatsApp</string>
+    <string name="btn_tg">Telegram</string>
+    <string name="btn_b64e">B64 Encode</string>
+    <string name="btn_b64d">B64 Decode</string>
+    <string name="btn_uuid">UUID</string>
+
+    <!-- Settings Tab -->
+    <string name="section_permissions">PERMISSIONS</string>
+    <string name="section_filter_engine">FILTER ENGINE</string>
+    <string name="section_appearance">APPEARANCE</string>
+    <string name="section_app_info">APP INFO</string>
+    <string name="theme_label">Terminal Theme</string>
+    <string name="theme_matrix">Matrix Green</string>
+    <string name="theme_amber">Amber CRT</string>
+    <string name="theme_dracula">Dracula</string>
+    <string name="theme_monokai">Monokai</string>
+    <string name="language_label">Language</string>
+    <string name="btn_github">GitHub</string>
+    <string name="btn_rate">Rate App</string>
+    <string name="btn_donate">Support Dev</string>
+    <string name="btn_share">Share</string>
 </resources>

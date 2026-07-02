@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.compose.setContent
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.ahmedsamy.purelink.ui.MainScreen
 import com.ahmedsamy.purelink.ui.theme.PureLinkTheme
 import androidx.appcompat.app.AppCompatDelegate
@@ -47,10 +49,8 @@ class MainActivity : AppCompatActivity() {
                 MainViewModel::class.java]
 
         setContent {
-            PureLinkTheme {
-                // Since we don't use Navigation Compose, MainScreen now handles its own internal navigation state
-                // or we pass a simple callback. But wait, MainScreen was monolithic.
-                // Refactoring: MainScreen will now decide whether to show Home or History.
+            val uiState by viewModel.uiState.collectAsState()
+            PureLinkTheme(theme = uiState.selectedTheme) {
                 MainScreen(
                     viewModel = viewModel,
                     onServiceClick = ::handleServiceClick,
