@@ -282,11 +282,16 @@ fun MainScreen(
 
                 SettingsSection(
                     unshortenEnabled = uiState.unshortenEnabled,
+                    youtubeShortsEnabled = uiState.youtubeShortsEnabled,
                     vibrateEnabled = uiState.vibrateEnabled,
                     toastEnabled = uiState.toastEnabled,
                     onUnshortenChange = {
                         FeedbackUtils.performHapticFeedback(context)
                         viewModel.setUnshortenEnabled(it)
+                    },
+                    onYoutubeShortsChange = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.setYoutubeShortsEnabled(it)
                     },
                     onVibrateChange = {
                         FeedbackUtils.performHapticFeedback(context)
@@ -693,9 +698,11 @@ private fun ServiceCard(isEnabled: Boolean, onCardClick: () -> Unit, onSwitchCli
 @Composable
 private fun SettingsSection(
     unshortenEnabled: Boolean,
+    youtubeShortsEnabled: Boolean,
     vibrateEnabled: Boolean,
     toastEnabled: Boolean,
     onUnshortenChange: (Boolean) -> Unit,
+    onYoutubeShortsChange: (Boolean) -> Unit,
     onVibrateChange: (Boolean) -> Unit,
     onToastChange: (Boolean) -> Unit
 ) {
@@ -704,6 +711,12 @@ private fun SettingsSection(
             label = stringResource(R.string.setting_unshorten),
             checked = unshortenEnabled,
             onCheckedChange = onUnshortenChange
+        )
+        HorizontalDivider(color = DividerDark)
+        SettingsSwitch(
+            label = stringResource(R.string.setting_youtube_shorts),
+            checked = youtubeShortsEnabled,
+            onCheckedChange = onYoutubeShortsChange
         )
         HorizontalDivider(color = DividerDark)
         SettingsSwitch(

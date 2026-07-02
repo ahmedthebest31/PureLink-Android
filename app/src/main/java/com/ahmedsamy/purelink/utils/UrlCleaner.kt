@@ -81,6 +81,18 @@ object UrlCleaner {
     }
 
     /**
+     * Converts YouTube Shorts URLs to standard watch format.
+     * Handles youtube.com/shorts/XXX and youtu.be/shorts/XXX.
+     */
+    fun convertYoutubeShorts(url: String): String {
+        val shortsRegex = Regex("https?://(?:www\\.)?(?:youtube\\.com/shorts/|youtu\\.be/shorts/)([\\w-]+)")
+        return shortsRegex.replace(url) { match ->
+            val videoId = match.groupValues[1]
+            "https://youtube.com/watch?v=$videoId"
+        }
+    }
+
+    /**
      * Data class to hold processing results for dynamic feedback.
      */
     data class ProcessingResult(
@@ -90,10 +102,10 @@ object UrlCleaner {
     )
 
     /**
-     * Processes the text: finds URLs, optionally unshortens them, and cleans them.
-     * Handles mixed text with multiple URLs.
+     * Processes the text: finds URLs, optionally unshortens them, converts YouTube Shorts,
+     * and cleans them. Handles mixed text with multiple URLs.
      */
-    suspend fun processText(text: String, unshorten: Boolean): ProcessingResult = withContext(Dispatchers.IO) {
+    suspend fun processText(text: String, unshorten: Boolean, convertShorts: Boolean = false): ProcessingResult = withContext(Dispatchers.IO) {
         val matches = URL_EXTRACTOR_REGEX.findAll(text).toList()
         if (matches.isEmpty()) return@withContext ProcessingResult(text, 0, 0)
 
@@ -115,11 +127,12 @@ object UrlCleaner {
                 }
             }
             
+            if (convertShorts) {
+                currentUrl = convertYoutubeShorts(currentUrl)
+            }
+            
             val cleaned = cleanSingleUrl(currentUrl)
             if (cleaned != currentUrl || wasUnshortened) {
-                // We count it as "cleaned" if tracking params were removed 
-                // OR if it was unshortened (since that's usually the first step of cleaning)
-                // Actually, the user wants "Cleaned X" and "Unshortened Y".
                 if (cleaned != currentUrl) globalCleanCount++
             }
             

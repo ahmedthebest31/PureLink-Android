@@ -36,12 +36,13 @@ class ShareActivity : AppCompatActivity() {
         val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         scope.launch {
             try {
-                // Get unshorten setting
+                // Get settings
                 val settingsRepo = SettingsRepository(this@ShareActivity)
                 val unshortenEnabled = settingsRepo.isUnshortenEnabled()
+                val youtubeShortsEnabled = settingsRepo.isYoutubeShortsEnabled()
                 
-                // Clean & Unshorten
-                val result = UrlCleaner.processText(text, unshortenEnabled)
+                // Clean, Unshorten, and Convert Shorts
+                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled)
                 val cleaned = result.resultText
                 
                 // Save to history if changed

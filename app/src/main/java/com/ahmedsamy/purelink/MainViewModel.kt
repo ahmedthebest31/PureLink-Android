@@ -34,6 +34,7 @@ data class MainUiState(
         val inputText: String = "",
         val isServiceEnabled: Boolean = false,
         val unshortenEnabled: Boolean = false,
+        val youtubeShortsEnabled: Boolean = true,
         val vibrateEnabled: Boolean = true,
         val toastEnabled: Boolean = true,
         val isResolving: Boolean = false,
@@ -127,6 +128,7 @@ class MainViewModel(
                     isMonitoringActive = prefs.getBoolean("monitoring_active", true),
                     cleanCount = prefs.getInt("stats_count", 0),
                     unshortenEnabled = settingsRepository.isUnshortenEnabled(),
+                    youtubeShortsEnabled = settingsRepository.isYoutubeShortsEnabled(),
                     vibrateEnabled = settingsRepository.isVibrateEnabled(),
                     toastEnabled = settingsRepository.isToastEnabled(),
                     selectedLanguage = settingsRepository.getLanguage()
@@ -183,7 +185,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             try {
-                val result = UrlCleaner.processText(text, _uiState.value.unshortenEnabled)
+                val result = UrlCleaner.processText(text, _uiState.value.unshortenEnabled, _uiState.value.youtubeShortsEnabled)
                 finalizeClean(result, text)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -241,6 +243,11 @@ class MainViewModel(
         _uiState.update { it.copy(unshortenEnabled = enabled) }
     }
 
+    fun setYoutubeShortsEnabled(enabled: Boolean) {
+        settingsRepository.setYoutubeShortsEnabled(enabled)
+        _uiState.update { it.copy(youtubeShortsEnabled = enabled) }
+    }
+
     fun setVibrateEnabled(enabled: Boolean) {
         settingsRepository.setVibrateEnabled(enabled)
         _uiState.update { it.copy(vibrateEnabled = enabled) }
@@ -282,7 +289,7 @@ class MainViewModel(
     fun handleIncomingText(text: String?) {
         if (!text.isNullOrEmpty()) {
             viewModelScope.launch {
-                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled())
+                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled(), settingsRepository.isYoutubeShortsEnabled())
                 finalizeClean(result, text)
             }
         }

@@ -45,4 +45,12 @@ class SettingsRepository(context: Context) {
     fun setLanguage(lang: String) {
         prefs.edit { putString("selected_language", lang) }
     }
+
+    fun isYoutubeShortsEnabled(): Boolean {
+        return prefs.getBoolean("youtube_shorts", true)
+    }
+
+    fun setYoutubeShortsEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean("youtube_shorts", enabled) }
+    }
 }

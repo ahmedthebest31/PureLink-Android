@@ -35,6 +35,7 @@
     <string name="service_card_subtitle">تفعيل البطارية والوصول</string>
     
     <string name="setting_unshorten">فك الروابط المختصرة</string>
+    <string name="setting_youtube_shorts">تحويل YouTube Shorts</string>
     <string name="setting_haptic">ردود الفعل اللمسية</string>
     <string name="setting_verbose">وضع التفاصيل (الإشعارات)</string>
 

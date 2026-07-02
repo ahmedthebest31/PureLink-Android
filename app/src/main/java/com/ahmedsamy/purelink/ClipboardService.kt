@@ -116,7 +116,8 @@ class ClipboardService : AccessibilityService() {
                 Log.d(TAG, "Found potential URLs. Processing asynchronously...")
                 
                 val unshortenEnabled = prefs.getBoolean("unshorten", false)
-                val result = UrlCleaner.processText(text, unshortenEnabled)
+                val youtubeShortsEnabled = prefs.getBoolean("youtube_shorts", true)
+                val result = UrlCleaner.processText(text, unshortenEnabled, youtubeShortsEnabled)
                 val cleaned = result.resultText
 
                 if (cleaned != text) {
