@@ -1,7 +1,9 @@
 package com.ahmedsamy.purelink.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -77,9 +79,50 @@ private val MonokaiColorScheme =
                 outlineVariant = Color(0xFF3A3D32)
         )
 
+private val LightColorScheme =
+        lightColorScheme(
+                primary = LightPrimary,
+                onPrimary = LightOnPrimary,
+                secondary = LightButtonActive,
+                onSecondary = LightBackground,
+                tertiary = LightButtonSecondary,
+                onTertiary = LightTextPrimary,
+                background = LightBackground,
+                onBackground = LightTextPrimary,
+                surface = LightSurface,
+                onSurface = LightTextPrimary,
+                surfaceVariant = LightButtonInactive,
+                onSurfaceVariant = LightTextSecondary,
+                outline = LightCardBorder,
+                outlineVariant = LightDivider
+        )
+
+private val HighContrastColorScheme =
+        lightColorScheme(
+                primary = HCPrimary,
+                onPrimary = HCBackground,
+                secondary = HCButtonActive,
+                onSecondary = HCBackground,
+                tertiary = HCButtonSecondary,
+                onTertiary = HCBackground,
+                background = HCBackground,
+                onBackground = HCTextPrimary,
+                surface = HCSurface,
+                onSurface = HCTextPrimary,
+                surfaceVariant = HCButtonInactive,
+                onSurfaceVariant = HCTextSecondary,
+                outline = HCCardBorder,
+                outlineVariant = HCDivider
+        )
+
 @Composable
 fun PureLinkTheme(theme: String = "matrix", content: @Composable () -> Unit) {
+    val isDark = isSystemInDarkTheme()
     val scheme = when (theme) {
+        "system" -> if (isDark) MatrixColorScheme else LightColorScheme
+        "light" -> LightColorScheme
+        "high_contrast" -> HighContrastColorScheme
+        "matrix" -> MatrixColorScheme
         "amber" -> AmberColorScheme
         "dracula" -> DraculaColorScheme
         "monokai" -> MonokaiColorScheme

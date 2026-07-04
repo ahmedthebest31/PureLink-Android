@@ -163,23 +163,28 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="section_social_utilities">SOCIAL UTILITIES</string>
     <string name="section_dev_tools">DEVELOPER TOOLS</string>
     <string name="output_field_desc">Tool Output</string>
-    <string name="btn_wa">WhatsApp</string>
-    <string name="btn_tg">Telegram</string>
-    <string name="btn_b64e">B64 Encode</string>
-    <string name="btn_b64d">B64 Decode</string>
-    <string name="btn_uuid">UUID</string>
+    <string name="btn_wa">Open in WhatsApp</string>
+    <string name="btn_tg">Open in Telegram</string>
+    <string name="btn_b64e">Encode Base64</string>
+    <string name="btn_b64d">Decode Base64</string>
+    <string name="btn_uuid">Generate UUID</string>
 
     <!-- Settings Tab -->
     <string name="section_permissions">PERMISSIONS</string>
     <string name="section_filter_engine">FILTER ENGINE</string>
     <string name="section_appearance">APPEARANCE</string>
     <string name="section_app_info">APP INFO</string>
-    <string name="theme_label">Terminal Theme</string>
+    <string name="theme_label">App Theme</string>
     <string name="theme_matrix">Matrix Green</string>
     <string name="theme_amber">Amber CRT</string>
     <string name="theme_dracula">Dracula</string>
     <string name="theme_monokai">Monokai</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_high_contrast">High Contrast</string>
     <string name="language_label">Language</string>
+    <string name="section_lang_theme">LANGUAGE &amp; THEME</string>
+    <string name="section_system">SYSTEM</string>
     <string name="btn_github">GitHub</string>
     <string name="btn_rate">Rate App</string>
     <string name="btn_donate">Support Dev</string>

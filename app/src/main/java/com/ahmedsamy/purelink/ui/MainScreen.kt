@@ -21,11 +21,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -234,7 +248,6 @@ fun MainScreen(
             containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 PureLinkTopBar(
-                    cleanCount = uiState.cleanCount,
                     onHistoryClick = {
                         FeedbackUtils.performHapticFeedback(context)
                         currentScreen = Screen.HISTORY
@@ -395,34 +408,18 @@ fun MainScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PureLinkTopBar(cleanCount: Int, onHistoryClick: () -> Unit) {
+private fun PureLinkTopBar(onHistoryClick: () -> Unit) {
     val context = LocalContext.current
-    val cleanedDesc = stringResource(R.string.cleaned_count_desc, cleanCount)
 
     TopAppBar(
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = ">_ " + stringResource(R.string.app_title),
-                    color = TerminalGreen,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = cleanCount.toString(),
-                    color = TextPrimary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace,
-                    modifier = Modifier.semantics { contentDescription = cleanedDesc }
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
+            Text(
+                text = ">_ " + stringResource(R.string.app_title),
+                color = TerminalGreen,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace
+            )
         },
         actions = {
             IconButton(onClick = {
@@ -540,42 +537,44 @@ private fun DashboardTab(
 private fun PowerButton(isActive: Boolean, onClick: () -> Unit) {
     val statusText = if (isActive) stringResource(R.string.system_online) else stringResource(R.string.system_offline)
     val statusColor = if (isActive) MaterialTheme.colorScheme.primary else StatusPaused
+    val desc = "$statusText, ${stringResource(R.string.monitoring_label)}"
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onClick() }
             .padding(16.dp)
+            .semantics { contentDescription = desc }
     ) {
-        Surface(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .border(
-                    width = 3.dp,
-                    color = statusColor,
-                    shape = CircleShape
-                ),
-            color = MaterialTheme.colorScheme.surface,
-            shape = CircleShape,
-            tonalElevation = 0.dp
-        ) {
-            Box(
+        Box(contentAlignment = Alignment.Center) {
+            Surface(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        if (isActive) statusColor.copy(alpha = 0.1f)
-                        else MaterialTheme.colorScheme.surface
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .then(
+                        if (!isActive) Modifier.border(
+                            width = 3.dp,
+                            color = statusColor,
+                            shape = CircleShape
+                        ) else Modifier
                     ),
-                contentAlignment = Alignment.Center
+                color = if (isActive) statusColor else MaterialTheme.colorScheme.surface,
+                shape = CircleShape,
+                tonalElevation = if (isActive) 8.dp else 0.dp,
+                shadowElevation = if (isActive) 12.dp else 0.dp
             ) {
-                Text(
-                    text = if (isActive) "ON" else "OFF",
-                    color = statusColor,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (isActive) "ON" else "OFF",
+                        color = if (isActive) MaterialTheme.colorScheme.surface else statusColor,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
             }
         }
 
@@ -588,18 +587,12 @@ private fun PowerButton(isActive: Boolean, onClick: () -> Unit) {
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Monospace
         )
-
-        Text(
-            text = stringResource(R.string.monitoring_label),
-            color = TextSecondary,
-            fontSize = 11.sp,
-            fontFamily = FontFamily.Monospace
-        )
     }
 }
 
 @Composable
 private fun StatsGrid(cleanCount: Int, unshortenCount: Int, filterCount: Int, ignoredCount: Int) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -609,13 +602,17 @@ private fun StatsGrid(cleanCount: Int, unshortenCount: Int, filterCount: Int, ig
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             StatCard(
+                icon = Icons.Filled.CheckCircle,
                 label = stringResource(R.string.stat_cleaned),
                 value = cleanCount.toString(),
+                contentDesc = context.getString(R.string.stat_cleaned) + ": $cleanCount",
                 modifier = Modifier.weight(1f)
             )
             StatCard(
+                icon = Icons.Filled.Link,
                 label = stringResource(R.string.stat_unshortened),
                 value = unshortenCount.toString(),
+                contentDesc = context.getString(R.string.stat_unshortened) + ": $unshortenCount",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -624,13 +621,17 @@ private fun StatsGrid(cleanCount: Int, unshortenCount: Int, filterCount: Int, ig
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             StatCard(
+                icon = Icons.Filled.FilterAlt,
                 label = stringResource(R.string.stat_filters),
                 value = filterCount.toString(),
+                contentDesc = context.getString(R.string.stat_filters) + ": $filterCount",
                 modifier = Modifier.weight(1f)
             )
             StatCard(
+                icon = Icons.Filled.Block,
                 label = stringResource(R.string.stat_ignored),
                 value = ignoredCount.toString(),
+                contentDesc = context.getString(R.string.stat_ignored) + ": $ignoredCount",
                 modifier = Modifier.weight(1f)
             )
         }
@@ -638,20 +639,28 @@ private fun StatsGrid(cleanCount: Int, unshortenCount: Int, filterCount: Int, ig
 }
 
 @Composable
-private fun StatCard(label: String, value: String, modifier: Modifier = Modifier) {
-    TerminalCard(modifier = modifier) {
+private fun StatCard(icon: ImageVector, label: String, value: String, contentDesc: String, modifier: Modifier = Modifier) {
+    TerminalCard(modifier = modifier.semantics { contentDescription = contentDesc }) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                color = TextSecondary,
+                fontSize = 10.sp,
+                fontFamily = FontFamily.Monospace
+            )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = value,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace
-            )
-            Text(
-                text = label,
-                color = TextSecondary,
-                fontSize = 10.sp,
                 fontFamily = FontFamily.Monospace
             )
         }
@@ -839,6 +848,13 @@ private fun ToolsTab(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
             ) {
+                Icon(
+                    imageVector = Icons.Filled.Forum,
+                    contentDescription = null,
+                    tint = TextPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_wa),
                     color = TextPrimary,
@@ -850,6 +866,13 @@ private fun ToolsTab(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonSecondary)
             ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.Send,
+                    contentDescription = null,
+                    tint = TextPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_tg),
                     color = TextPrimary,
@@ -873,6 +896,13 @@ private fun ToolsTab(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
             ) {
+                Icon(
+                    imageVector = Icons.Filled.Lock,
+                    contentDescription = null,
+                    tint = TextPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_b64e),
                     color = TextPrimary,
@@ -885,6 +915,13 @@ private fun ToolsTab(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonSecondary)
             ) {
+                Icon(
+                    imageVector = Icons.Filled.LockOpen,
+                    contentDescription = null,
+                    tint = TextPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_b64d),
                     color = TextPrimary,
@@ -897,6 +934,13 @@ private fun ToolsTab(
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonInactive)
             ) {
+                Icon(
+                    imageVector = Icons.Filled.Fingerprint,
+                    contentDescription = null,
+                    tint = TextPrimary,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_uuid),
                     color = TextPrimary,
@@ -941,6 +985,29 @@ private fun SettingsTab(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        Text(
+            text = stringResource(R.string.section_lang_theme),
+            color = TextMuted,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        TerminalCard(modifier = Modifier.fillMaxWidth()) {
+            Column {
+                LanguageSelector(
+                    selectedLanguage = selectedLanguage,
+                    onLanguageChange = onLanguageChange
+                )
+                HorizontalDivider(color = DividerDark)
+                ThemeSelector(
+                    selectedTheme = selectedTheme,
+                    onThemeChange = onThemeChange
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = stringResource(R.string.section_permissions),
             color = TextMuted,
@@ -1063,7 +1130,7 @@ private fun SettingsTab(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.section_appearance),
+            text = stringResource(R.string.section_system),
             color = TextMuted,
             fontFamily = FontFamily.Monospace,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -1081,16 +1148,6 @@ private fun SettingsTab(
                     label = stringResource(R.string.setting_verbose),
                     checked = toastEnabled,
                     onCheckedChange = onToastChange
-                )
-                HorizontalDivider(color = DividerDark)
-                LanguageSelector(
-                    selectedLanguage = selectedLanguage,
-                    onLanguageChange = onLanguageChange
-                )
-                HorizontalDivider(color = DividerDark)
-                ThemeSelector(
-                    selectedTheme = selectedTheme,
-                    onThemeChange = onThemeChange
                 )
             }
         }
@@ -1110,19 +1167,29 @@ private fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onUpdateFilters() }
-                        .padding(vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Sync,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.menu_update),
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = ">",
                         color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalDivider(color = DividerDark)
@@ -1130,19 +1197,29 @@ private fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onGitHubClick() }
-                        .padding(vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Code,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.btn_github),
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = ">",
                         color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalDivider(color = DividerDark)
@@ -1150,19 +1227,29 @@ private fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onRateClick() }
-                        .padding(vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.btn_rate),
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = ">",
                         color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalDivider(color = DividerDark)
@@ -1170,19 +1257,29 @@ private fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onShareClick() }
-                        .padding(vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Share,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.btn_share),
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = ">",
                         color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
                 HorizontalDivider(color = DividerDark)
@@ -1190,19 +1287,29 @@ private fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onDonateClick() }
-                        .padding(vertical = 12.dp),
+                        .padding(horizontal = 8.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = null,
+                        tint = TextSecondary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.btn_donate),
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = ">",
                         color = MaterialTheme.colorScheme.primary,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -1215,10 +1322,13 @@ private fun SettingsTab(
 private fun ThemeSelector(selectedTheme: String, onThemeChange: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     val themes = listOf(
+        "system" to R.string.theme_system,
         "matrix" to R.string.theme_matrix,
         "amber" to R.string.theme_amber,
         "dracula" to R.string.theme_dracula,
-        "monokai" to R.string.theme_monokai
+        "monokai" to R.string.theme_monokai,
+        "light" to R.string.theme_light,
+        "high_contrast" to R.string.theme_high_contrast
     )
 
     ExposedDropdownMenuBox(
