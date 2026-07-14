@@ -1,0 +1,8 @@
+v4.0.0 - Major Update!
+- 3-Tab Navigation: Dashboard (stats), Tools (Base64/UUID/Chat), Settings (themes, language).
+- Multi-Theme: Matrix, Light, Dark, or Dynamic (follows wallpaper).
+- Smart Commands: Paste a URL and clean in one tap.
+- Ignore List: Exclude domains from cleaning.
+- YouTube Shorts: Converts Shorts to standard watch links.
+- Adaptive Icons: Modern Android 13+ adaptive launcher icons.
+- Edge-to-Edge: Optimized for Android 15, no overlap issues.

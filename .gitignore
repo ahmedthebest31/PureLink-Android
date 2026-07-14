@@ -54,5 +54,10 @@ keystore.properties
 # Release artifacts
 *.apk.sha256
 
+# AI-generated local reports
+ai_changes.md
+project_analysis_report.md
+docx/
+
 # Kotlin build cache
 .kotlin/

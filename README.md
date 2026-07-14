@@ -27,10 +27,19 @@ PureLink is a powerful, lightweight, and accessibility-first Android utility des
 * **In-Place Text Cleaning:** Select any text or URL system-wide -> Click the context menu (3 dots) -> Choose "Pure Link". It will instantly clean and replace the link right where you are typing!
 
 ### 🎨 UI & Accessibility
+* **3-Tab Bottom Navigation:** Switch seamlessly between Dashboard (stats & history), Tools (Base64, UUID, chat), and Settings.
+* **Multi-Theme System:** Choose from Matrix (classic green-on-black), Light, Dark, or Dynamic (follows system wallpaper).
+* **Smart Commands:** Paste or type a URL directly in the input box and clean it in one tap — no mode switching needed.
+* **Ignore List:** Exclude specific domains from cleaning or URL processing.
+* **YouTube Shorts Resolver:** Automatically converts `youtube.com/shorts/xxx` links to standard `watch?v=` format.
+* **Adaptive Icons:** Modern Android 13+ adaptive launcher icons with proper foreground/background layers.
 * **Full Localization:** Seamlessly switch between English and Arabic interfaces on the fly with full RTL support.
 * **Jetpack Compose:** The entire UI is built with Jetpack Compose, resulting in a smoother, more responsive, and lighter interface.
 * **Accessibility First:** Designed by a blind developer. Enhanced TalkBack support with labeled touch targets and semantic descriptions for all interactive elements.
-* **Terminal Aesthetic:** Polished "Green-on-Black" theme with system bar transparency, optimized for ultimate OLED battery saving.---
+* **Multi-Theme System:** Choose from Matrix (classic green-on-black), Light, Dark, or Dynamic (follows system wallpaper).
+- **Cloud Boost** — Convert Dropbox share links to direct `?dl=1` download links and Google Drive `view` links to direct `uc?export=download` links
+- **Clipboard Commands** — Type `!wa`, `!tg`, `!b64e`, `!b64d`, or `!uuid` followed by text, copy it, and PureLink processes it automatically (can be toggled off)
+
 
 ## 🛠️ Tech Stack
 

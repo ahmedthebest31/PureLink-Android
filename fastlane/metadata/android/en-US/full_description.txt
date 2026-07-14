@@ -3,7 +3,7 @@ Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and dev
 🛡️ PRIVACY & CORE SANITIZATION
 
 * Flexible Usage: You are in full control. Clean links manually through the main app interface, share links directly to Pure Link from other apps, or enable the optional background monitoring service for full automation.
-* Deep Cleaning & Invisible Processing: Share any link from your browser or other apps directly to Pure Link. It instantly removes invasive tracking tags (like "utm_", "fbclid", "gclid", and "ref") and copies the clean URL to your clipboard without ever opening a new screen or interrupting your workflow!
+* Deep Cleaning & Invisible Processing: Share any link from any app. It instantly removes tracking tags (utm_, fbclid, gclid, ref) and copies the clean URL to your clipboard without opening a new screen!
 * In-Place Text Cleaning: Select any text or URL inside any app, tap "Pure Link" from the context menu, and it will instantly clean and replace the link right where you are typing.
 * Smart Unshortener & Advanced Resolution: Safely expands shortened URLs (e.g., bit.ly) in the background to reveal the true destination. It simulates standard browser requests to ensure complex redirect chains resolve correctly, protecting you from hidden malicious sites.
 * Auto-Updating Filters: Automatically fetches the latest tracking filters from our GitHub repository every week, keeping your privacy protection up-to-date without needing an app update.
@@ -11,10 +11,17 @@ Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and dev
 📜 SMART WORKFLOW & TOOLS
 
 * Quick Settings Tile: Conveniently toggle the optional clipboard monitoring service on or off directly from your phone's top notification shade.
+* 3-Tab Navigation: Switch between Dashboard (stats & history), Tools (Base64, UUID, chat), and Settings effortlessly.
+* Smart Commands: Paste a URL in the box and clean in one tap.
+* Ignore List: Exclude specific domains from cleaning.
+* YouTube Shorts: Converts Shorts links to standard watch format.
 * Bilingual Support: Seamlessly switch between English and Arabic interfaces on the fly without restarting the app.
 * Smart History: Saves only the actually cleaned links (up to 10) locally for quick access, allowing you to re-copy or share them easily.
 * Direct Message: Start a chat on your favorite messaging apps instantly using just a phone number or username, without saving them to your contacts.
 * Developer Utilities: Built-in Base64 Encoder/Decoder and a one-click UUID Generator for quick text processing.
+* **Multi-Theme System:** Choose from Matrix (classic green-on-black), Light, Dark, or Dynamic (follows system wallpaper).
+- **Cloud Boost** — Convert Dropbox share links to direct `?dl=1` download links and Google Drive `view` links to direct `uc?export=download` links
+- **Clipboard Commands** — Type `!wa`, `!tg`, `!b64e`, `!b64d`, or `!uuid` followed by text, copy it, and PureLink processes it automatically (can be toggled off)
 
 ♿ ACCESSIBILITY FIRST (Screen Reader Optimized)
 
@@ -30,6 +37,5 @@ https://github.com/ahmedthebest31/PureLink
 Open Source Project:
 https://github.com/ahmedthebest31/PureLink-Android
 
-⚠️ ACCESSIBILITY SERVICE API DISCLOSURE:
-To enable its core background automation, Pure Link utilizes the AccessibilityService API. When the background monitoring feature is enabled by the user, this API is used to detect copied URLs across your screen or clipboard. This allows the app to instantly unshorten links and remove tracking parameters in the background without requiring you to manually open the app.
-Privacy Guarantee: We respect your privacy. This API is used EXCLUSIVELY for detecting and sanitizing links. We DO NOT collect, store, record, or share any of your personal information, screen content, or clipboard data with any third parties.
+⚠️ ACCESSIBILITY SERVICE API:
+Pure Link uses the AccessibilityService API ONLY when background monitoring is enabled. It detects copied URLs to unshorten and clean them. We do NOT collect, store, or share any personal data, screen content, or clipboard data.
