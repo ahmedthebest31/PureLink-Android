@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
+    private var lastHandledIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val prefs = getSharedPreferences("PureLinkPrefs", Context.MODE_PRIVATE)
@@ -94,8 +95,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIncomingIntent(intent: Intent?) {
-        val text = intent?.getStringExtra(Intent.EXTRA_TEXT)
-        viewModel.handleIncomingText(text)
+        if (intent == null || intent === lastHandledIntent) return
+        val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+        if (!text.isNullOrEmpty()) {
+            lastHandledIntent = intent
+            viewModel.handleIncomingText(text)
+        }
     }
 
     private fun handleServiceClick() {

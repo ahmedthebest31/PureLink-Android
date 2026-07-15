@@ -3,6 +3,8 @@ package com.ahmedsamy.purelink.utils
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
 /**
@@ -12,6 +14,9 @@ import kotlinx.coroutines.withContext
 object UrlCleaner {
     // Regex to find http/https URLs. \S+ matches non-whitespace characters.
     private val URL_EXTRACTOR_REGEX = Regex("https?://\\S+")
+
+    // Mutex to protect mutable shared state from concurrent access
+    private val rulesMutex = Mutex()
 
     private var TRACKING_PARAMS = listOf(
         "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -24,6 +29,9 @@ object UrlCleaner {
     @Volatile
     private var PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
 
+    private fun getTrackingParams(): List<String> = TRACKING_PARAMS
+    private fun getParamsRegex(): Regex = PARAMS_REGEX
+
     fun getFilterCount(): Int = TRACKING_PARAMS.size
 
     private fun buildRegex(params: List<String>): Regex {
@@ -34,11 +42,10 @@ object UrlCleaner {
         val repo = com.ahmedsamy.purelink.data.RulesRepository(context)
         val newRules = repo.loadRules()
         if (!newRules.isNullOrEmpty()) {
-            // Merge or Replace? The prompt implies "using the updated list", usually replacing defaults is the goal of a dynamic update.
-            // However, ensuring we don't lose core ones might be good.
-            // Let's assume the remote list is the authority.
-            TRACKING_PARAMS = newRules
-            PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
+            rulesMutex.withLock {
+                TRACKING_PARAMS = newRules
+                PARAMS_REGEX = buildRegex(TRACKING_PARAMS)
+            }
         }
     }
 
@@ -58,17 +65,18 @@ object UrlCleaner {
      */
     fun cleanMixedText(inputText: String):
         String {
-        return replaceUrls(inputText) { url -> cleanSingleUrl(url) }
+        val paramsRegex = getParamsRegex()
+        return replaceUrls(inputText) { url -> cleanSingleUrl(url, paramsRegex) }
     }
 
     /**
      * Cleans a single URL string by removing tracking parameters.
      */
-    fun cleanSingleUrl(url: String): String {
+    fun cleanSingleUrl(url: String, paramsRegex: Regex = getParamsRegex()): String {
         var result = url
 
         // Remove tracking parameters
-        result = PARAMS_REGEX.replace(result, "")
+        result = paramsRegex.replace(result, "")
 
         // Clean up malformed query strings (e.g. "?&" -> "?", "&&" -> "&")
         result = result.replace(Regex("\\?&"), "?")
@@ -124,6 +132,9 @@ object UrlCleaner {
         val matches = URL_EXTRACTOR_REGEX.findAll(text).toList()
         if (matches.isEmpty()) return@withContext ProcessingResult(text, 0, 0)
 
+        // Snapshot the current rules under the lock for consistent use throughout processing
+        val currentParamsRegex = rulesMutex.withLock { getParamsRegex() }
+
         val uniqueUrls = matches.map { it.value }.distinct()
         val urlMap = mutableMapOf<String, String>()
         var globalCleanCount = 0
@@ -155,7 +166,7 @@ object UrlCleaner {
                 currentUrl = convertYoutubeShorts(currentUrl)
             }
             
-            val cleaned = cleanSingleUrl(currentUrl)
+            val cleaned = cleanSingleUrl(currentUrl, currentParamsRegex)
             if (cleaned != currentUrl || wasUnshortened) {
                 if (cleaned != currentUrl) globalCleanCount++
             }
@@ -171,32 +182,58 @@ object UrlCleaner {
     }
 
     /**
-     * Resolves shortened URLs (e.g., bit.ly) to their destination.
-     * Suspend function for background execution.
+     * Resolves shortened URLs (e.g., bit.ly) to their destination by following
+     * the full redirect chain. Suspend function for background execution.
      */
     suspend fun resolveUrl(shortUrl: String): String = withContext(Dispatchers.IO) {
+        val maxRedirects = 10
         try {
-            var urlStr = shortUrl.trim()
-            // Validate URL format before attempting connection to avoid MalformedURLException on garbage
-            if (!urlStr.startsWith("http")) urlStr = "https://$urlStr"
-            
-            // Basic validation: must contain a host
+            var currentUrl = shortUrl.trim()
+            if (!currentUrl.startsWith("http")) currentUrl = "https://$currentUrl"
+
+            // Validate URL format before attempting connection
             try {
-                val u = URL(urlStr)
+                val u = URL(currentUrl)
                 if (u.host.isNullOrEmpty()) return@withContext shortUrl
             } catch (e: Exception) {
                 return@withContext shortUrl
             }
-            
-            val connection = URL(urlStr).openConnection() as HttpURLConnection
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36")
-            connection.instanceFollowRedirects = false
-            connection.connectTimeout = 5000
-            connection.readTimeout = 5000
-            connection.connect()
-            
-            val location = connection.getHeaderField("Location")
-            if (location != null && location.isNotEmpty()) location else shortUrl
+
+            var lastLocation: String? = null
+            var redirectCount = 0
+
+            while (redirectCount < maxRedirects) {
+                val connection = URL(currentUrl).openConnection() as HttpURLConnection
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36")
+                connection.instanceFollowRedirects = false
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                connection.connect()
+
+                val location = connection.getHeaderField("Location")
+                connection.disconnect()
+
+                if (location.isNullOrEmpty()) {
+                    break
+                }
+
+                // Resolve relative redirects
+                lastLocation = if (location.startsWith("http")) {
+                    location
+                } else {
+                    try {
+                        val base = URL(currentUrl)
+                        URL(base, location).toExternalForm()
+                    } catch (e: Exception) {
+                        location
+                    }
+                }
+
+                currentUrl = lastLocation
+                redirectCount++
+            }
+
+            lastLocation ?: shortUrl
         } catch (e: Exception) {
             e.printStackTrace()
             shortUrl

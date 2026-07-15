@@ -349,8 +349,13 @@ class MainViewModel(
     fun handleIncomingText(text: String?) {
         if (!text.isNullOrEmpty()) {
             viewModelScope.launch {
-                val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled(), settingsRepository.isYoutubeShortsEnabled(), settingsRepository.getIgnoreList())
-                finalizeClean(result, text)
+                try {
+                    val result = UrlCleaner.processText(text, settingsRepository.isUnshortenEnabled(), settingsRepository.isYoutubeShortsEnabled(), settingsRepository.getIgnoreList())
+                    finalizeClean(result, text)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    showToast(ToastMessage.Literal("Error: ${e.message}"))
+                }
             }
         }
     }
