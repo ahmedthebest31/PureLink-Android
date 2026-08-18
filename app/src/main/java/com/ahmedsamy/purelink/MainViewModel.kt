@@ -420,7 +420,7 @@ class MainViewModel(
     }
 
     fun openInstaPay() {
-        openUrl("https://ipn.eg/S/ahmedthebest/instapay/63TO4s")
+        openUrl("https://ipn.eg/S/ahmedsamyelkhouly/instapay/1KWwcR")
     }
 
     override fun onCleared() {

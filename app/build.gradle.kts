@@ -78,15 +78,6 @@ android {
         }
     }
 
-    // Auto-rename output APKs dynamically based on their build variant
-    applicationVariants.configureEach {
-        val variantName = this.name
-        outputs.forEach { output ->
-            val suffix = if (variantName == "release") "-Official" else "-Debug"
-            output.outputFileName = "PureLink-v${versionName}${suffix}.apk"
-        }
-    }
-
     compileOptions {
         sourceCompatibility(JavaVersion.VERSION_21)
         targetCompatibility(JavaVersion.VERSION_21)

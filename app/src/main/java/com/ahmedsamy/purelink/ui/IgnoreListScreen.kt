@@ -191,12 +191,16 @@ fun IgnoreListScreen(
                         fontFamily = FontFamily.Monospace
                     )
                     Spacer(modifier = Modifier.height(12.dp))
+                    val addDomainDesc = stringResource(R.string.ignore_list_add_hint)
                     BasicTextField(
                         value = newDomain,
                         onValueChange = { newDomain = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp),
+                            .height(48.dp)
+                            .semantics {
+                                contentDescription = addDomainDesc
+                            },
                         textStyle = TextStyle(color = TextPrimary, fontFamily = FontFamily.Monospace),
                         cursorBrush = SolidColor(TerminalGreen),
                         decorationBox = { innerTextField ->

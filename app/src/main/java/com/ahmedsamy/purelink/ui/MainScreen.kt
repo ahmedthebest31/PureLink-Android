@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Block
@@ -78,6 +80,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -394,7 +398,7 @@ fun MainScreen(
                         },
                         onDonateClick = {
                             FeedbackUtils.performHapticFeedback(context)
-                            viewModel.openPayPal()
+                            viewModel.openInstaPay()
                         },
                         onShareClick = {
                             FeedbackUtils.performHapticFeedback(context)
@@ -543,7 +547,7 @@ private fun PowerButton(isActive: Boolean, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .clickable { onClick() }
+            .clickable(role = Role.Button) { onClick() }
             .padding(16.dp)
             .semantics { contentDescription = desc }
     ) {
@@ -653,7 +657,7 @@ private fun StatCard(icon: ImageVector, label: String, value: String, contentDes
             Text(
                 text = label,
                 color = TextSecondary,
-                fontSize = 10.sp,
+                fontSize = 11.sp,
                 fontFamily = FontFamily.Monospace
             )
             Spacer(modifier = Modifier.height(2.dp))
@@ -689,7 +693,9 @@ private fun InputCard(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)
-                        .semantics { contentDescription = inputDesc },
+                        .semantics {
+                            contentDescription = inputDesc
+                        },
                     textStyle = TextStyle(
                         color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = FontFamily.Monospace
@@ -1020,7 +1026,11 @@ private fun SettingsTab(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onServiceClick() },
+                    .toggleable(
+                        value = isServiceEnabled,
+                        onValueChange = { onServiceClick() },
+                        role = Role.Switch
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
@@ -1040,11 +1050,12 @@ private fun SettingsTab(
                 }
                 Switch(
                     checked = isServiceEnabled,
-                    onCheckedChange = { onServiceClick() },
+                    onCheckedChange = null,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = MaterialTheme.colorScheme.primary,
                         checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                    )
+                    ),
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         }
@@ -1075,6 +1086,11 @@ private fun SettingsTab(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .toggleable(
+                            value = smartCommandsEnabled,
+                            onValueChange = onSmartCommandsChange,
+                            role = Role.Switch
+                        )
                         .padding(vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -1098,19 +1114,22 @@ private fun SettingsTab(
                     }
                     Switch(
                         checked = smartCommandsEnabled,
-                        onCheckedChange = onSmartCommandsChange,
+                        onCheckedChange = null,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = MaterialTheme.colorScheme.primary,
                             checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
-                        )
+                        ),
+                        modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
                 HorizontalDivider(color = DividerDark)
+                val ignoreListDesc = stringResource(R.string.setting_ignore_list) + " (${ignoreList.size})"
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onIgnoreListClick() }
-                        .padding(vertical = 12.dp),
+                        .clickable(role = Role.Button) { onIgnoreListClick() }
+                        .padding(vertical = 12.dp)
+                        .semantics { contentDescription = ignoreListDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -1164,11 +1183,13 @@ private fun SettingsTab(
 
         TerminalCard(modifier = Modifier.fillMaxWidth()) {
             Column {
+                val updateDesc = stringResource(R.string.menu_update)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onUpdateFilters() }
-                        .padding(horizontal = 8.dp, vertical = 14.dp),
+                        .clickable(role = Role.Button) { onUpdateFilters() }
+                        .padding(horizontal = 8.dp, vertical = 14.dp)
+                        .semantics { contentDescription = updateDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -1179,7 +1200,7 @@ private fun SettingsTab(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.menu_update),
+                        text = updateDesc,
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
@@ -1194,11 +1215,13 @@ private fun SettingsTab(
                     )
                 }
                 HorizontalDivider(color = DividerDark)
+                val githubDesc = stringResource(R.string.btn_github)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onGitHubClick() }
-                        .padding(horizontal = 8.dp, vertical = 14.dp),
+                        .clickable(role = Role.Button) { onGitHubClick() }
+                        .padding(horizontal = 8.dp, vertical = 14.dp)
+                        .semantics { contentDescription = githubDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -1209,7 +1232,7 @@ private fun SettingsTab(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.btn_github),
+                        text = githubDesc,
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
@@ -1224,11 +1247,13 @@ private fun SettingsTab(
                     )
                 }
                 HorizontalDivider(color = DividerDark)
+                val rateDesc = stringResource(R.string.btn_rate)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onRateClick() }
-                        .padding(horizontal = 8.dp, vertical = 14.dp),
+                        .clickable(role = Role.Button) { onRateClick() }
+                        .padding(horizontal = 8.dp, vertical = 14.dp)
+                        .semantics { contentDescription = rateDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -1239,7 +1264,7 @@ private fun SettingsTab(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.btn_rate),
+                        text = rateDesc,
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
@@ -1254,11 +1279,13 @@ private fun SettingsTab(
                     )
                 }
                 HorizontalDivider(color = DividerDark)
+                val shareDesc = stringResource(R.string.btn_share)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onShareClick() }
-                        .padding(horizontal = 8.dp, vertical = 14.dp),
+                        .clickable(role = Role.Button) { onShareClick() }
+                        .padding(horizontal = 8.dp, vertical = 14.dp)
+                        .semantics { contentDescription = shareDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -1269,7 +1296,7 @@ private fun SettingsTab(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.btn_share),
+                        text = shareDesc,
                         color = TextLighter,
                         fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
@@ -1284,11 +1311,13 @@ private fun SettingsTab(
                     )
                 }
                 HorizontalDivider(color = DividerDark)
+                val donateDesc = stringResource(R.string.btn_donate)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onDonateClick() }
-                        .padding(horizontal = 8.dp, vertical = 14.dp),
+                        .clickable(role = Role.Button) { onDonateClick() }
+                        .padding(horizontal = 8.dp, vertical = 14.dp)
+                        .semantics { contentDescription = donateDesc },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -1468,13 +1497,17 @@ private fun SmartCommandsHelpDialog(onDismiss: () -> Unit) {
                     "trim [text]" to stringResource(R.string.smart_cmd_trim)
                 )
                 commands.forEach { (cmd, desc) ->
-                    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+                    Row(
+                        modifier = Modifier
+                            .padding(vertical = 2.dp)
+                            .semantics(mergeDescendants = true) { contentDescription = "/$cmd: $desc" }
+                    ) {
                         Text(
                             text = "/$cmd",
                             color = MaterialTheme.colorScheme.primary,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.width(100.dp)
+                            modifier = Modifier.widthIn(min = 100.dp)
                         )
                         Text(text = desc, color = TextSecondary)
                     }
