@@ -1,4 +1,3 @@
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.util.Properties
 
 plugins {
@@ -21,7 +20,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Keep only English and Arabic resources to drastically reduce APK/AAB size
-        resourceConfigurations += listOf("en", "ar")
+        androidResources.localeFilters += listOf("en", "ar")
     }
 
     signingConfigs {
@@ -82,9 +81,9 @@ android {
     // Auto-rename output APKs dynamically based on their build variant
     applicationVariants.configureEach {
         val variantName = this.name
-        outputs.mapNotNull { it as? BaseVariantOutputImpl }.forEach {
+        outputs.forEach { output ->
             val suffix = if (variantName == "release") "-Official" else "-Debug"
-            it.outputFileName = "PureLink-v${versionName}${suffix}.apk"
+            output.outputFileName = "PureLink-v${versionName}${suffix}.apk"
         }
     }
 

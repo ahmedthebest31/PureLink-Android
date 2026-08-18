@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.ahmedsamy.purelink.data.SettingsRepository
 
 object FeedbackUtils {
@@ -11,8 +12,8 @@ object FeedbackUtils {
     fun performHapticFeedback(context: Context) {
         val repo = SettingsRepository(context)
         if (repo.isVibrateEnabled()) {
-            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (vibrator.hasVibrator()) {
+            val vibrator = ContextCompat.getSystemService(context, Vibrator::class.java)
+            if (vibrator?.hasVibrator() == true) {
                 vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
             }
         }
