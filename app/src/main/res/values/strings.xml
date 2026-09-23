@@ -97,6 +97,12 @@ Note: Enabling this service is optional. If you prefer not to use it, you can ma
     <string name="btn_paypal">PayPal</string>
     <string name="btn_instapay">InstaPay (Egypt)</string>
 
+    <!-- Rating Dialog -->
+    <string name="rating_title">Enjoying PureLink?</string>
+    <string name="rating_message">If you find PureLink useful, a quick rating helps others discover it. Thank you for your support!</string>
+    <string name="btn_not_now">Not now</string>
+    <string name="btn_rate_now">Rate now</string>
+
     <string name="clipboard_label">Cleaned by PureLink</string>
     <string name="checking_updates">Checking for updates...</string>
     <string name="tile_active">PureLink: ON</string>

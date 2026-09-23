@@ -49,7 +49,9 @@ data class MainUiState(
         val selectedLanguage: String = "",
         val selectedTab: Int = 0,
         val selectedTheme: String = "matrix",
-        val toolsOutputText: String = ""
+        val toolsOutputText: String = "",
+        val showRatingDialog: Boolean = false,
+        val showDonationDialog: Boolean = false
 )
 
 sealed class ToastMessage {
@@ -84,10 +86,12 @@ class MainViewModel(
             }
 
     init {
+        ensureFirstLaunchTime()
         loadInitialState()
         applyInitialLocale()
         loadHistory()
         checkOnboarding()
+        checkFeedbackDialogs()
         viewModelScope.launch {
              UrlCleaner.reloadRules(context)
         }
@@ -217,6 +221,7 @@ class MainViewModel(
             
             if (result.cleanCount > 0 || result.unshortenCount > 0) {
                 incrementStats(result.unshortenCount)
+                checkFeedbackDialogs()
                 viewModelScope.launch {
                     try {
                         historyRepository.addUrl(cleanedText)
@@ -398,17 +403,75 @@ class MainViewModel(
 
     fun rateApp() {
         val packageName = context.packageName
-        val uri = Uri.parse("market://details?id=$packageName")
-        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(goToMarket)
-        } catch (e: Exception) {
-            val webUri = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-            val goToWeb = Intent(Intent.ACTION_VIEW, webUri)
-            goToWeb.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(goToWeb)
+        val playStoreInstalled = try {
+            context.packageManager.getPackageInfo("com.android.vending", 0)
+            true
+        } catch (_: Exception) {
+            false
         }
+        if (playStoreInstalled) {
+            val uri = Uri.parse("market://details?id=$packageName")
+            val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+            goToMarket.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try {
+                context.startActivity(goToMarket)
+                return
+            } catch (_: Exception) {
+                openUrl("https://play.google.com/store/apps/details?id=$packageName")
+            }
+        } else {
+            openUrl("https://f-droid.org/packages/$packageName/")
+        }
+    }
+
+    private fun ensureFirstLaunchTime() {
+        if (settingsRepository.getFirstLaunchTime() == 0L) {
+            settingsRepository.setFirstLaunchTime(System.currentTimeMillis())
+        }
+    }
+
+    private fun checkFeedbackDialogs() {
+        if (_uiState.value.showRatingDialog || _uiState.value.showDonationDialog) return
+
+        if (!settingsRepository.hasSeenRatingPrompt() &&
+            _uiState.value.cleanCount >= 3 &&
+            daysSinceInstall() >= 2
+        ) {
+            _uiState.update { it.copy(showRatingDialog = true) }
+            return
+        }
+
+        if (!settingsRepository.hasSeenDonationPrompt() &&
+            _uiState.value.cleanCount >= 5 &&
+            daysSinceInstall() >= 5
+        ) {
+            _uiState.update { it.copy(showDonationDialog = true) }
+        }
+    }
+
+    private fun daysSinceInstall(): Long {
+        val firstLaunch = settingsRepository.getFirstLaunchTime()
+        if (firstLaunch == 0L) return 0L
+        return (System.currentTimeMillis() - firstLaunch) / (24L * 60 * 60 * 1000)
+    }
+
+    fun dismissRatingDialog() {
+        settingsRepository.setRatingPromptSeen()
+        _uiState.update { it.copy(showRatingDialog = false) }
+    }
+
+    fun dismissDonationDialog() {
+        settingsRepository.setDonationPromptSeen()
+        _uiState.update { it.copy(showDonationDialog = false) }
+    }
+
+    fun openRatingStore() {
+        dismissRatingDialog()
+        rateApp()
+    }
+
+    fun showDonationDialog() {
+        _uiState.update { it.copy(showDonationDialog = true) }
     }
 
     fun openRepo() {

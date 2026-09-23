@@ -241,6 +241,85 @@ fun MainScreen(
         )
     }
 
+    if (uiState.showRatingDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                FeedbackUtils.performHapticFeedback(context)
+                viewModel.dismissRatingDialog()
+            },
+            title = { Text(text = stringResource(R.string.rating_title), fontFamily = FontFamily.Monospace, color = TextPrimary) },
+            text = { Text(stringResource(R.string.rating_message), color = TextPrimary) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        FeedbackUtils.performHapticFeedback(context)
+                        viewModel.openRatingStore()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                ) {
+                    Text(stringResource(R.string.btn_rate_now), color = TextPrimary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    FeedbackUtils.performHapticFeedback(context)
+                    viewModel.dismissRatingDialog()
+                }) {
+                    Text(stringResource(R.string.btn_not_now), color = TextSecondary)
+                }
+            },
+            containerColor = TerminalCardBackground,
+            textContentColor = TextPrimary
+        )
+    }
+
+    if (uiState.showDonationDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                FeedbackUtils.performHapticFeedback(context)
+                viewModel.dismissDonationDialog()
+            },
+            title = { Text(text = stringResource(R.string.donate_title), fontFamily = FontFamily.Monospace, color = TextPrimary) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(stringResource(R.string.donate_message), color = TextPrimary)
+                    Button(
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            viewModel.dismissDonationDialog()
+                            viewModel.openPayPal()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                    ) {
+                        Text(stringResource(R.string.btn_paypal), color = TextPrimary)
+                    }
+                    Button(
+                        onClick = {
+                            FeedbackUtils.performHapticFeedback(context)
+                            viewModel.dismissDonationDialog()
+                            viewModel.openInstaPay()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                    ) {
+                        Text(stringResource(R.string.btn_instapay), color = TextPrimary)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    FeedbackUtils.performHapticFeedback(context)
+                    viewModel.dismissDonationDialog()
+                }) {
+                    Text(stringResource(R.string.cancel), color = TextSecondary)
+                }
+            },
+            containerColor = TerminalCardBackground,
+            textContentColor = TextPrimary
+        )
+    }
+
     if (currentScreen == Screen.IGNORE_LIST) {
         IgnoreListScreen(
             viewModel = viewModel,
@@ -430,7 +509,7 @@ fun MainScreen(
                         },
                         onDonateClick = {
                             FeedbackUtils.performHapticFeedback(context)
-                            viewModel.openInstaPay()
+                            viewModel.showDonationDialog()
                         },
                         onShareClick = {
                             FeedbackUtils.performHapticFeedback(context)

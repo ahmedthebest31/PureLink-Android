@@ -87,4 +87,28 @@ class SettingsRepository(context: Context) {
     fun setTheme(theme: String) {
         prefs.edit { putString("app_theme", theme) }
     }
+
+    fun getFirstLaunchTime(): Long {
+        return prefs.getLong("first_launch_time", 0L)
+    }
+
+    fun setFirstLaunchTime(time: Long) {
+        prefs.edit { putLong("first_launch_time", time) }
+    }
+
+    fun hasSeenRatingPrompt(): Boolean {
+        return prefs.getBoolean("rating_prompt_seen", false)
+    }
+
+    fun setRatingPromptSeen() {
+        prefs.edit { putBoolean("rating_prompt_seen", true) }
+    }
+
+    fun hasSeenDonationPrompt(): Boolean {
+        return prefs.getBoolean("donation_prompt_seen", false)
+    }
+
+    fun setDonationPromptSeen() {
+        prefs.edit { putBoolean("donation_prompt_seen", true) }
+    }
 }

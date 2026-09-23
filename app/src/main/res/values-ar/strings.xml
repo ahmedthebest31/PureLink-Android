@@ -94,6 +94,12 @@
     <string name="btn_paypal">PayPal</string>
     <string name="btn_instapay">InstaPay (مصر)</string>
 
+    <!-- Rating Dialog -->
+    <string name="rating_title">هل يعجبك PureLink؟</string>
+    <string name="rating_message">إذا كان PureLink مفيداً لك، فالتقييم السريع يساعد الآخرين على اكتشافه. شكراً لدعمك!</string>
+    <string name="btn_not_now">ليس الآن</string>
+    <string name="btn_rate_now">قيم الآن</string>
+
     <string name="clipboard_label">تم التنظيف بواسطة PureLink</string>
     <string name="checking_updates">جاري فحص التحديثات...</string>
     <string name="tile_active">PureLink: شغال</string>
