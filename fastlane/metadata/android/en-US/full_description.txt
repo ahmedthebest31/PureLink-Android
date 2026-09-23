@@ -12,20 +12,20 @@ Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and dev
 
 * Quick Settings Tile: Conveniently toggle the optional clipboard monitoring service on or off directly from your phone's top notification shade.
 * 3-Tab Navigation: Switch between Dashboard (stats & history), Tools (Base64, UUID, chat), and Settings effortlessly.
-* Smart Commands: Paste a URL in the box and clean in one tap.
+* Smart Commands: Type /wa, /tg, /b64e, /b64d, /uuid, /upper, /lower, /capitalize, /reverse, /clear, or /trim followed by text for instant processing.
 * Ignore List: Exclude specific domains from cleaning.
 * YouTube Shorts: Converts Shorts links to standard watch format.
 * Bilingual Support: Seamlessly switch between English and Arabic interfaces on the fly without restarting the app.
 * Smart History: Saves only the actually cleaned links (up to 10) locally for quick access, allowing you to re-copy or share them easily.
 * Direct Message: Start a chat on your favorite messaging apps instantly using just a phone number or username, without saving them to your contacts.
 * Developer Utilities: Built-in Base64 Encoder/Decoder and a one-click UUID Generator for quick text processing.
-* **Multi-Theme System:** Choose from Matrix (classic green-on-black), Light, Dark, or Dynamic (follows system wallpaper).
-- **Cloud Boost** — Convert Dropbox share links to direct `?dl=1` download links and Google Drive `view` links to direct `uc?export=download` links
-- **Clipboard Commands** — Type `!wa`, `!tg`, `!b64e`, `!b64d`, or `!uuid` followed by text, copy it, and PureLink processes it automatically (can be toggled off)
+* Multi-Theme System: 7 themes — Matrix Green, Amber CRT, Dracula, Monokai, Light, High Contrast, and System (follows device dark/light mode).
 
 ♿ ACCESSIBILITY FIRST (Screen Reader Optimized)
 
 * Designed by a Blind Developer: Built from the ground up with a "Blind-First" approach, ensuring 100% compatibility with TalkBack and other screen readers. Every element is clearly labeled.
+* WCAG AA Compliance: Proper semantic roles (Button, Switch, TextInput) on all interactive elements, merged descendants for compound widgets, and content descriptions for every control.
+* WCAG AA Contrast: All text colors meet minimum contrast ratios against their backgrounds for readability in both Matrix and Light themes.
 * Smart Feedback: Get precise details and haptic vibrations after every action (e.g., "2 links cleaned, 1 unshortened").
 * Sci-Fi Theme & Maximum Efficiency: Features a sleek "Green on Black" terminal style designed for ultimate energy efficiency. It is highly optimized to run indefinitely without consuming your device's battery or system resources.
 

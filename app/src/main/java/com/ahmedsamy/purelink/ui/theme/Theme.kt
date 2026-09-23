@@ -5,24 +5,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 private val MatrixColorScheme =
         darkColorScheme(
-                primary = TerminalGreen,
-                onPrimary = TerminalBackground,
-                secondary = ButtonActive,
-                onSecondary = TextPrimary,
-                tertiary = ButtonSecondary,
-                onTertiary = TextLight,
-                background = TerminalBackground,
-                onBackground = TextPrimary,
-                surface = TerminalCardBackground,
-                onSurface = TextPrimary,
-                surfaceVariant = ButtonInactive,
-                onSurfaceVariant = TextSecondary,
-                outline = TerminalBorder,
-                outlineVariant = DividerMedium
+                primary = MatrixGreen,
+                onPrimary = MatrixBackground,
+                secondary = MatrixButtonActive,
+                onSecondary = MatrixTextPrimary,
+                tertiary = MatrixButtonSecondary,
+                onTertiary = MatrixTextLight,
+                background = MatrixBackground,
+                onBackground = MatrixTextPrimary,
+                surface = MatrixCard,
+                onSurface = MatrixTextPrimary,
+                surfaceVariant = MatrixButtonInactive,
+                onSurfaceVariant = MatrixTextSecondary,
+                outline = MatrixBorder,
+                outlineVariant = MatrixDividerMedium
         )
 
 private val AmberColorScheme =
@@ -128,5 +129,17 @@ fun PureLinkTheme(theme: String = "matrix", content: @Composable () -> Unit) {
         "monokai" -> MonokaiColorScheme
         else -> MatrixColorScheme
     }
-    MaterialTheme(colorScheme = scheme, content = content)
+    val colors = when (theme) {
+        "system" -> if (isDark) MatrixColors else LightColors
+        "light" -> LightColors
+        "high_contrast" -> HighContrastColors
+        "matrix" -> MatrixColors
+        "amber" -> AmberColors
+        "dracula" -> DraculaColors
+        "monokai" -> MonokaiColors
+        else -> MatrixColors
+    }
+    CompositionLocalProvider(LocalPureLinkColors provides colors) {
+        MaterialTheme(colorScheme = scheme, content = content)
+    }
 }

@@ -67,14 +67,11 @@ android {
             }
 
             // --- Dependency Info Configuration ---
-            // Uncomment the block below when building for Google Play to maximize privacy and reduce size.
-            // Comment it out when building for IzzyOnDroid/F-Droid so their bots can analyze dependencies.
-            /*
+            // Disabled to strip Google-encrypted dependency block for F-Droid/IzzyOnDroid compliance.
             dependenciesInfo {
                 includeInApk = false
                 includeInBundle = false
             }
-            */
         }
     }
 

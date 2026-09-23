@@ -107,7 +107,10 @@ import com.ahmedsamy.purelink.ui.components.SettingsSwitch
 import com.ahmedsamy.purelink.ui.components.TerminalCard
 import com.ahmedsamy.purelink.ui.theme.ButtonActive
 import com.ahmedsamy.purelink.ui.theme.ButtonInactive
+import com.ahmedsamy.purelink.ui.theme.ButtonInactiveLabel
+import com.ahmedsamy.purelink.ui.theme.ButtonLabel
 import com.ahmedsamy.purelink.ui.theme.ButtonSecondary
+import com.ahmedsamy.purelink.ui.theme.ButtonSecondaryLabel
 import com.ahmedsamy.purelink.ui.theme.DividerDark
 import com.ahmedsamy.purelink.ui.theme.DividerMedium
 import com.ahmedsamy.purelink.ui.theme.StatusPaused
@@ -214,9 +217,9 @@ fun MainScreen(
                         viewModel.markOnboardingSeen()
                         onServiceClick()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
                 ) {
-                    Text(stringResource(R.string.ok), color = TextPrimary)
+                    Text(stringResource(R.string.ok), color = ButtonLabel)
                 }
             },
             dismissButton = {
@@ -255,9 +258,9 @@ fun MainScreen(
                         FeedbackUtils.performHapticFeedback(context)
                         viewModel.openRatingStore()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                    colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
                 ) {
-                    Text(stringResource(R.string.btn_rate_now), color = TextPrimary)
+                    Text(stringResource(R.string.btn_rate_now), color = ButtonLabel)
                 }
             },
             dismissButton = {
@@ -290,9 +293,9 @@ fun MainScreen(
                             viewModel.openPayPal()
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                        colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
                     ) {
-                        Text(stringResource(R.string.btn_paypal), color = TextPrimary)
+                        Text(stringResource(R.string.btn_paypal), color = ButtonLabel)
                     }
                     Button(
                         onClick = {
@@ -301,9 +304,9 @@ fun MainScreen(
                             viewModel.openInstaPay()
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = TerminalGreen)
+                        colors = ButtonDefaults.buttonColors(containerColor = ButtonActive)
                     ) {
-                        Text(stringResource(R.string.btn_instapay), color = TextPrimary)
+                        Text(stringResource(R.string.btn_instapay), color = ButtonLabel)
                     }
                 }
             },
@@ -848,7 +851,7 @@ private fun InputCard(
                 ) {
                     Text(
                         text = stringResource(R.string.btn_paste),
-                        color = TextLighter,
+                        color = ButtonSecondaryLabel,
                         fontFamily = FontFamily.Monospace
                     )
                 }
@@ -861,7 +864,7 @@ private fun InputCard(
                 ) {
                     Text(
                         text = if (isResolving) stringResource(R.string.btn_resolving) else stringResource(R.string.btn_execute),
-                        color = TextPrimary,
+                        color = ButtonLabel,
                         fontFamily = FontFamily.Monospace
                     )
                 }
@@ -931,7 +934,7 @@ private fun ToolsTab(
                     ) {
                         Text(
                             text = stringResource(R.string.btn_copy),
-                            color = TextPrimary,
+                            color = ButtonLabel,
                             fontFamily = FontFamily.Monospace
                         )
                     }
@@ -944,7 +947,7 @@ private fun ToolsTab(
                     ) {
                         Text(
                             text = stringResource(R.string.btn_clear),
-                            color = TextLighter,
+                            color = ButtonSecondaryLabel,
                             fontFamily = FontFamily.Monospace
                         )
                     }
@@ -970,13 +973,13 @@ private fun ToolsTab(
                 Icon(
                     imageVector = Icons.Filled.Forum,
                     contentDescription = null,
-                    tint = TextPrimary,
+                    tint = ButtonLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_wa),
-                    color = TextPrimary,
+                    color = ButtonLabel,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -988,13 +991,13 @@ private fun ToolsTab(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.Send,
                     contentDescription = null,
-                    tint = TextPrimary,
+                    tint = ButtonSecondaryLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_tg),
-                    color = TextPrimary,
+                    color = ButtonSecondaryLabel,
                     fontFamily = FontFamily.Monospace
                 )
             }
@@ -1018,13 +1021,13 @@ private fun ToolsTab(
                 Icon(
                     imageVector = Icons.Filled.Lock,
                     contentDescription = null,
-                    tint = TextPrimary,
+                    tint = ButtonLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_b64e),
-                    color = TextPrimary,
+                    color = ButtonLabel,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp
                 )
@@ -1037,13 +1040,13 @@ private fun ToolsTab(
                 Icon(
                     imageVector = Icons.Filled.LockOpen,
                     contentDescription = null,
-                    tint = TextPrimary,
+                    tint = ButtonSecondaryLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_b64d),
-                    color = TextPrimary,
+                    color = ButtonSecondaryLabel,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp
                 )
@@ -1056,13 +1059,13 @@ private fun ToolsTab(
                 Icon(
                     imageVector = Icons.Filled.Fingerprint,
                     contentDescription = null,
-                    tint = TextPrimary,
+                    tint = ButtonInactiveLabel,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.btn_uuid),
-                    color = TextPrimary,
+                    color = ButtonInactiveLabel,
                     fontFamily = FontFamily.Monospace,
                     fontSize = 12.sp
                 )
