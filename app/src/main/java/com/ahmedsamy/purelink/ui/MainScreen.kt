@@ -1,6 +1,14 @@
 package com.ahmedsamy.purelink.ui
 
+import android.provider.Settings
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -126,6 +134,13 @@ fun MainScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val animationsEnabled = remember {
+        Settings.Global.getFloat(
+            context.contentResolver,
+            Settings.Global.ANIMATOR_DURATION_SCALE,
+            1f
+        ) > 0f
+    }
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
 
     LaunchedEffect(uiState.toastMessage) {
@@ -273,7 +288,24 @@ fun MainScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                when (uiState.selectedTab) {
+                AnimatedContent(
+                    targetState = uiState.selectedTab,
+                    transitionSpec = {
+                        val duration = if (animationsEnabled) 55 else 0
+                        (fadeIn(tween(duration)) +
+                                slideInVertically(
+                                    animationSpec = tween(duration),
+                                    initialOffsetY = { height -> if (animationsEnabled) height / 22 else 0 }
+                                )) togetherWith
+                                (fadeOut(tween(duration)) +
+                                        slideOutVertically(
+                                            animationSpec = tween(duration),
+                                            targetOffsetY = { height -> if (animationsEnabled) -height / 22 else 0 }
+                                        ))
+                    },
+                    label = "tab_content"
+                ) { tab ->
+                when (tab) {
                     0 -> DashboardTab(
                         isMonitoringActive = uiState.isMonitoringActive,
                         cleanCount = uiState.cleanCount,
@@ -405,6 +437,7 @@ fun MainScreen(
                             viewModel.shareApp()
                         }
                     )
+                }
                 }
             }
         }

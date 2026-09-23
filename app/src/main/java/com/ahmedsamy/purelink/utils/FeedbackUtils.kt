@@ -14,7 +14,7 @@ object FeedbackUtils {
         if (repo.isVibrateEnabled()) {
             val vibrator = ContextCompat.getSystemService(context, Vibrator::class.java)
             if (vibrator?.hasVibrator() == true) {
-                vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(VibrationEffect.createOneShot(20, 40))
             }
         }
     }
