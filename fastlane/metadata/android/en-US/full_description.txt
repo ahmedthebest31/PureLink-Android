@@ -1,41 +1,35 @@
-Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and developers. It is a powerful, Ultra-Lightweight URL cleaner designed to strip tracking parameters, expand shortened links, open direct chats, and provide essential developer tools—all wrapped in a Sci-Fi themed, screen-reader optimized interface.
+Pure Link is the ultimate "Swiss Army Knife" for privacy-conscious users and developers. It is a powerful, Ultra-Lightweight URL cleaner that strips tracking parameters, expands shortened links, opens direct chats, and provides developer tools — wrapped in a Sci-Fi themed, screen-reader optimized interface.
 
 🛡️ PRIVACY & CORE SANITIZATION
 
-* Flexible Usage: You are in full control. Clean links manually through the main app interface, share links directly to Pure Link from other apps, or enable the optional background monitoring service for full automation.
-* Deep Cleaning & Invisible Processing: Share any link from any app. It instantly removes tracking tags (utm_, fbclid, gclid, ref) and copies the clean URL to your clipboard without opening a new screen!
-* In-Place Text Cleaning: Select any text or URL inside any app, tap "Pure Link" from the context menu, and it will instantly clean and replace the link right where you are typing.
-* Smart Unshortener & Advanced Resolution: Safely expands shortened URLs (e.g., bit.ly) in the background to reveal the true destination. It simulates standard browser requests to ensure complex redirect chains resolve correctly, protecting you from hidden malicious sites.
-* Auto-Updating Filters: Automatically fetches the latest tracking filters from our GitHub repository every week, keeping your privacy protection up-to-date without needing an app update.
+* Flexible Usage: Clean links manually in the app, share links directly to Pure Link from other apps, or enable the optional background monitoring service for full automation.
+* Deep Cleaning & Invisible Processing: Share any link from any app. It instantly removes tracking tags (utm_, fbclid, gclid, ref) and copies the clean URL to your clipboard without opening a new screen.
+* In-Place Text Cleaning: Select any text or URL inside any app, tap "Pure Link" from the context menu, and it instantly cleans and replaces the link right where you type.
+* Smart Unshortener & Advanced Resolution: Safely expands shortened URLs (e.g., bit.ly) in the background to reveal the true destination, simulating standard browser requests to resolve complex redirect chains and protect against hidden malicious sites.
+* Auto-Updating Filters: Automatically fetches the latest tracking filters from our GitHub repository weekly, keeping privacy protection up to date without an app update.
 
 📜 SMART WORKFLOW & TOOLS
 
-* Quick Settings Tile: Conveniently toggle the optional clipboard monitoring service on or off directly from your phone's top notification shade.
-* 3-Tab Navigation: Switch between Dashboard (stats & history), Tools (Base64, UUID, chat), and Settings effortlessly.
+* Quick Settings Tile: Toggle the optional clipboard monitoring service on or off from your phone's notification shade.
+* 3-Tab Navigation: Switch between Dashboard (stats & history), Tools (Base64, UUID, chat), and Settings.
 * Smart Commands: Type /wa, /tg, /b64e, /b64d, /uuid, /upper, /lower, /capitalize, /reverse, /clear, or /trim followed by text for instant processing.
-* Ignore List: Exclude specific domains from cleaning.
-* YouTube Shorts: Converts Shorts links to standard watch format.
-* Bilingual Support: Seamlessly switch between English and Arabic interfaces on the fly without restarting the app.
-* Smart History: Saves only the actually cleaned links (up to 10) locally for quick access, allowing you to re-copy or share them easily.
-* Direct Message: Start a chat on your favorite messaging apps instantly using just a phone number or username, without saving them to your contacts.
-* Developer Utilities: Built-in Base64 Encoder/Decoder and a one-click UUID Generator for quick text processing.
-* Multi-Theme System: 7 themes — Matrix Green, Amber CRT, Dracula, Monokai, Light, High Contrast, and System (follows device dark/light mode).
+* Ignore List, YouTube Shorts conversion, bilingual EN/AR UI, smart history (last 10 cleaned links), direct messaging, Base64/UUID utilities, and 7 themes (Matrix, Amber CRT, Dracula, Monokai, Light, High Contrast, System).
 
 ♿ ACCESSIBILITY FIRST (Screen Reader Optimized)
 
 * Designed by a Blind Developer: Built from the ground up with a "Blind-First" approach, ensuring 100% compatibility with TalkBack and other screen readers. Every element is clearly labeled.
 * WCAG AA Compliance: Proper semantic roles (Button, Switch, TextInput) on all interactive elements, merged descendants for compound widgets, and content descriptions for every control.
-* WCAG AA Contrast: All text colors meet minimum contrast ratios against their backgrounds for readability in both Matrix and Light themes.
-* Smart Feedback: Get precise details and haptic vibrations after every action (e.g., "2 links cleaned, 1 unshortened").
-* Sci-Fi Theme & Maximum Efficiency: Features a sleek "Green on Black" terminal style designed for ultimate energy efficiency. It is highly optimized to run indefinitely without consuming your device's battery or system resources.
+* WCAG AA Contrast: All text colors meet minimum contrast ratios against their backgrounds in both Matrix and Light themes.
+* Smart Feedback: Precise details and haptic vibrations after every action (e.g., "2 links cleaned, 1 unshortened").
+* Sci-Fi Theme & Maximum Efficiency: Sleek "Green on Black" terminal style for energy efficiency; optimized to run indefinitely without draining battery or system resources.
 
 💻 ALSO AVAILABLE ON DESKTOP
 
-Looking for this power on your PC? Check out "Pure Link Desktop" on our GitHub repository. It’s a high-performance system tool written in Go (Golang) that runs silently in your system tray.
+Looking for this power on your PC? Check out "Pure Link Desktop" on our GitHub repository — a high-performance system tool written in Go (Golang) that runs silently in your system tray.
 https://github.com/ahmedthebest31/PureLink
 
 Open Source Project:
 https://github.com/ahmedthebest31/PureLink-Android
 
 ⚠️ ACCESSIBILITY SERVICE API:
-Pure Link uses the AccessibilityService API ONLY when background monitoring is enabled. It detects copied URLs to unshorten and clean them. We do NOT collect, store, or share any personal data, screen content, or clipboard data.
+Pure Link uses the AccessibilityService API ONLY when background monitoring is enabled, detecting copied URLs to unshorten and clean them. We do NOT collect, store, or share any personal data, screen content, or clipboard data.
