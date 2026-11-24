@@ -1,0 +1,16 @@
+name: Validate Fastlane Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'fastlane/**'
+      - '.github/workflows/validate-fastlane.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'fastlane/**'
+      - '.github/workflows/validate-fastlane.yml'
+
+jobs:
+  validate:
+    uses: ahmedthebest31/.github/.github/workflows/validate-fastlane.yml@main
